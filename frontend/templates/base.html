@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Smart Wash Laundry - Sistem POS Laundry Modern">
+    <title>{{ page_title | default('Smart Wash Laundry') }} — Smart Wash Laundry</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="icon" href="{{ url_for('static', filename='img/logo.png') }}" type="image/png">
+    {% block head_extra %}{% endblock %}
+</head>
+<body>
+    <div class="app-layout">
+        <!-- ── SIDEBAR ── -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-logo">
+            </div>
+
+            <div class="sidebar-menu-label">Menu Utama</div>
+
+            <ul class="sidebar-nav">
+                {% if session.get('role') == 'owner' %}
+                    <li>
+                        <a href="{{ url_for('owner_layanan.dashboard_owner') }}" class="{{ 'active' if active_menu == 'dashboard' }}">
+                            <span class="menu-icon"><i class="bi bi-house-door"></i></span> Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('owner_layanan.layanan_list') }}" class="{{ 'active' if active_menu == 'layanan' }}">
+                            <span class="menu-icon"><i class="bi bi-box-seam"></i></span> Kelola Layanan
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('owner_karyawan.karyawan_list') }}" class="{{ 'active' if active_menu == 'karyawan' }}">
+                            <span class="menu-icon"><i class="bi bi-people-fill"></i></span> Kelola Karyawan
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('owner_promo.promo_list') }}" class="{{ 'active' if active_menu == 'promo' }}">
+                            <span class="menu-icon"><i class="bi bi-tag-fill"></i></span> Kelola Promo
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('laporan.riwayat_owner') }}" class="{{ 'active' if active_menu == 'riwayat' }}">
+                            <span class="menu-icon"><i class="bi bi-clock-history"></i></span> Riwayat Transaksi
+                        </a>
+                    </li>
+                {% else %}
+                    <li>
+                        <a href="{{ url_for('transaksi.dashboard') }}" class="{{ 'active' if active_menu == 'dashboard' }}">
+                            <span class="menu-icon"><i class="bi bi-house-door"></i></span> Beranda
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('transaksi.transaksi_baru') }}" class="{{ 'active' if active_menu == 'transaksi_baru' }}">
+                            <span class="menu-icon"><i class="bi bi-basket"></i></span> Transaksi Baru
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('transaksi.riwayat_transaksi') }}" class="{{ 'active' if active_menu == 'riwayat' }}">
+                            <span class="menu-icon"><i class="bi bi-clock-history"></i></span> Riwayat Transaksi
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </aside>
+
+        <!-- ── MAIN CONTENT ── -->
+        <div class="main-content">
+            <!-- ── TOPBAR ── -->
+            <header class="topbar">
+                <h1 class="topbar-title">{{ page_title | default('Dashboard') }}</h1>
+
+                <div class="topbar-right">
+                    <span class="badge-role badge-owner">
+                        Role : {{ 'Owner' if session.get('role') == 'owner' else 'Kasir' }}
+                    </span>
+
+                    <div class="topbar-user">
+                        <div class="topbar-user-info">
+                            <div class="topbar-user-name">{{ session.get('nama', 'User') }}</div>
+                            <div class="topbar-user-role">
+                                {{ 'Pemilik Toko' if session.get('role') == 'owner' else 'Kasir' }}
+                            </div>
+                        </div>
+                        <div class="topbar-avatar">
+                            <img src="https://ui-avatars.com/api/?name={{ session.get('nama', 'User') }}&background=000&color=fff&rounded=true&bold=true" alt="Avatar">
+                        </div>
+                    </div>
+
+                    <a href="{{ url_for('auth.logout') }}" class="btn-logout-outline" id="btnLogout">
+                        Log Out
+                    </a>
+                </div>
+            </header>
+
+            <!-- ── PAGE CONTENT ── -->
+            <div class="page-content">
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="flash-message flash-{{ category }}">
+                                {% if category == 'success' %}✅{% else %}❌{% endif %}
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    {% include 'partials/modal_detail_transaksi.html' %}
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

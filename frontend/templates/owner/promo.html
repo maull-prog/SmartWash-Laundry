@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% set active_menu = 'promo' %}
+
+{% block content %}
+<div class="d-flex justify-between align-center mb-3">
+    <h2 class="mb-0" style="font-size:20px;">Daftar Promo</h2>
+    <a href="{{ url_for('owner_promo.promo_tambah') }}" class="btn btn-primary">➕ Tambah Promo Baru</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID PROMO</th>
+                        <th>NAMA PROMO</th>
+                        <th>SYARAT PROMO</th>
+                        <th>NOMINAL POTONGAN</th>
+                        <th>STATUS</th>
+                        <th style="text-align:center;">AKSI</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in promo %}
+                    <tr>
+                        <td><strong>P-{{ '{:02d}'.format(p.id_promo) }}</strong></td>
+                        <td>
+                            <strong class="{{ 'text-inactive' if not p.aktif else '' }}">
+                                {{ p.nama_promo }}
+                            </strong>
+                        </td>
+                        <td class="text-green">>= {{ p.syarat_min_kg }} Kg</td>
+                        <td class="text-price">- Rp {{ '{:,.0f}'.format(p.nominal_potongan).replace(',', '.') }}</td>
+                        <td>
+                            {% if p.aktif %}
+                                <span class="badge badge-aktif">Aktif</span>
+                            {% else %}
+                                <span class="badge badge-nonaktif">Non-Aktif</span>
+                            {% endif %}
+                        </td>
+                        <td style="text-align:center;">
+                            <a href="{{ url_for('owner_promo.promo_edit', id=p.id_promo) }}" 
+                               class="btn-action btn-action-edit" title="Edit">✏️</a>
+                               
+                            <form action="{{ url_for('owner_promo.promo_toggle_aktif', id=p.id_promo) }}" method="POST" style="display:inline;">
+                                {% if p.aktif %}
+                                <button type="submit" class="btn-action btn-action-deactivate" 
+                                        data-confirm="Nonaktifkan promo ini?" title="Nonaktifkan">🚫</button>
+                                {% else %}
+                                <button type="submit" class="btn-action btn-action-activate" 
+                                        data-confirm="Aktifkan kembali promo ini?" title="Aktifkan">✅</button>
+                                {% endif %}
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center" style="padding:40px;color:#9CA3AF;">Belum ada data promo</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

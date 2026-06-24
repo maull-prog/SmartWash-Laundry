@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% set active_menu = 'karyawan' %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="{{ url_for('owner_karyawan.karyawan_list') }}" style="color:var(--text-gray); font-size:13px; font-weight:500;">
+        ← Kembali ke Daftar Karyawan
+    </a>
+</div>
+
+<div class="card" style="max-width: 600px; margin:0 auto;">
+    <div class="card-header">
+        <h3>{{ 'Edit Karyawan' if mode == 'edit' else 'Tambah Karyawan Baru' }}</h3>
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            <div class="form-group">
+                <label for="nama_lengkap">Nama Lengkap *</label>
+                <input type="text" class="form-control" id="nama_lengkap" name="nama_lengkap" required 
+                       value="{{ karyawan.nama_lengkap if karyawan else '' }}" placeholder="Nama lengkap karyawan">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="username">Username Login *</label>
+                    <input type="text" class="form-control" id="username" name="username" required 
+                           value="{{ karyawan.username if karyawan else '' }}" placeholder="Gunakan huruf kecil tanpa spasi">
+                </div>
+                <div class="form-group">
+                    <label for="no_hp">No WhatsApp</label>
+                    <input type="text" class="form-control" id="no_hp" name="no_hp" 
+                           value="{{ karyawan.no_hp if karyawan else '' }}" placeholder="08xx-xxxx-xxxx">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password {{ '*' if mode == 'tambah' else '(Opsional)' }}</label>
+                <input type="password" class="form-control" id="password" name="password" 
+                       {{ 'required' if mode == 'tambah' else '' }} 
+                       placeholder="{{ 'Ketik password baru' if mode == 'edit' else 'Password akun' }}">
+                {% if mode == 'edit' %}
+                <small style="color:var(--text-light);">Biarkan kosong jika tidak ingin mengubah password.</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <div class="form-check">
+                    <input type="checkbox" id="aktif" name="aktif" value="1" 
+                           {{ 'checked' if (not karyawan) or (karyawan and karyawan.aktif) else '' }}>
+                    <label for="aktif" class="mb-0" style="cursor:pointer;">Akun Aktif</label>
+                </div>
+                <small style="color:var(--text-light); margin-left:26px;">Karyawan bisa login jika akun aktif.</small>
+            </div>
+
+            <hr style="border:0; border-top:1px solid #E5E7EB; margin:24px 0;">
+
+            <div class="d-flex justify-between">
+                <a href="{{ url_for('owner_karyawan.karyawan_list') }}" class="btn" style="background:#F3F4F6; color:var(--text-dark);">Batal</a>
+                <button type="submit" class="btn btn-primary">
+                    {{ 'Simpan Perubahan' if mode == 'edit' else 'Tambah Karyawan' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

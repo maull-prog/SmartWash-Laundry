@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% set active_menu = 'layanan' %}
+
+{% block content %}
+<div class="d-flex justify-between align-center mb-3">
+    <h2 class="mb-0" style="font-size:20px;">Daftar Layanan</h2>
+    <a href="{{ url_for('owner_layanan.layanan_tambah') }}" class="btn btn-primary">➕ Tambah Layanan Baru</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>NO</th>
+                        <th>NAMA LAYANAN</th>
+                        <th>TARIF</th>
+                        <th>STATUS</th>
+                        <th>KATEGORI</th>
+                        <th style="text-align:center;">AKSI</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for l in layanan %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>
+                            <strong class="{{ 'text-inactive' if not l.aktif else '' }}">
+                                {{ l.nama_layanan }}
+                            </strong>
+                        </td>
+                        <td class="text-price">
+                            {% if l.kategori == 'Layanan' %}
+                                Rp {{ '{:,.0f}'.format(l.harga_per_kg).replace(',', '.') }} / kg
+                            {% else %}
+                                Rp {{ '{:,.0f}'.format(l.harga_satuan).replace(',', '.') }} / pcs
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if l.aktif %}
+                                <span class="badge badge-aktif">Aktif</span>
+                            {% else %}
+                                <span class="badge badge-nonaktif">Non-Aktif</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-blue">{{ l.kategori }}</td>
+                        <td style="text-align:center;">
+                            <a href="{{ url_for('owner_layanan.layanan_edit', id=l.id_layanan) }}" 
+                               class="btn-action btn-action-edit" title="Edit">✏️</a>
+                            
+                            <form action="{{ url_for('owner_layanan.layanan_hapus', id=l.id_layanan) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn-action btn-action-delete" 
+                                        data-confirm="Apakah Anda yakin ingin menghapus layanan ini?" title="Hapus">🗑</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center" style="padding:40px;color:#9CA3AF;">Belum ada data layanan</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

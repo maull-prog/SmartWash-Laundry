@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% set active_menu = 'riwayat' %}
+
+{% block content %}
+<!-- Search Bar -->
+<div class="search-bar">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchRiwayat" placeholder="Cari id nota / nama pelanggan..." value="{{ q }}">
+</div>
+
+<!-- Table -->
+<div class="card">
+    <div class="card-header">
+        <h3>📋 Nota Pelanggan</h3>
+    </div>
+    <div class="card-body">
+        <div class="table-container">
+            <table class="data-table" id="tableRiwayat">
+                <thead>
+                    <tr>
+                        <th>ID Nota</th>
+                        <th>Tgl Transaksi</th>
+                        <th>Pelanggan</th>
+                        <th>No WhatsApp</th>
+                        <th>Status Cucian</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="riwayatTableBody">
+                    {% if transaksi_list %}
+                        {% for t in transaksi_list %}
+                        <tr>
+                            <td><span class="link-nota">{{ t.kode_transaksi }}</span></td>
+                            <td>{{ t.tgl_masuk.strftime('%d %B %Y') if t.tgl_masuk else '-' }}</td>
+                            <td>{{ t.nama_pelanggan or '-' }}</td>
+                            <td>{{ t.no_hp_pelanggan or '-' }}</td>
+                            <td>
+                                {% if t.status_cucian == 'antrian' %}
+                                    <span class="badge badge-antrian">Antrian</span>
+                                {% elif t.status_cucian == 'sedang_dicuci' %}
+                                    <span class="badge badge-sedang_dicuci">Sedang Dicuci</span>
+                                {% elif t.status_cucian == 'siap_diambil' %}
+                                    <span class="badge badge-siap_diambil">Siap Diambil</span>
+                                {% elif t.status_cucian == 'selesai' %}
+                                    <span class="badge badge-selesai">Selesai</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button class="btn-action btn-action-view btn-detail-view"
+                                        data-id="{{ t.id_transaksi }}" title="Detail" id="btnDetail{{ t.id_transaksi }}">👁</button>
+                                <a href="{{ url_for('laporan.cetak_nota', kode_transaksi=t.kode_transaksi) }}"
+                                   class="btn-action btn-action-print" target="_blank" title="Cetak Nota">🖨</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">📭</div>
+                                    <div class="empty-state-text">Belum ada transaksi</div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% set active_menu = 'promo' %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="{{ url_for('owner_promo.promo_list') }}" style="color:var(--text-gray); font-size:13px; font-weight:500;">
+        ← Kembali ke Daftar Promo
+    </a>
+</div>
+
+<div class="card" style="max-width: 600px; margin:0 auto;">
+    <div class="card-header">
+        <h3>{{ 'Edit Promo' if mode == 'edit' else 'Tambah Promo Baru' }}</h3>
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            <div class="form-group">
+                <label for="nama_promo">Nama Promo *</label>
+                <input type="text" class="form-control" id="nama_promo" name="nama_promo" required 
+                       value="{{ promo.nama_promo if promo else '' }}" placeholder="Contoh: Diskon Mahasiswa">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="syarat_min_kg">Syarat Minimal Berat (Kg) *</label>
+                    <input type="number" class="form-control" id="syarat_min_kg" name="syarat_min_kg" required min="0.5" step="0.5" 
+                           value="{{ promo.syarat_min_kg if promo else '5' }}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="nominal_potongan">Nominal Potongan (Rp) *</label>
+                    <input type="number" class="form-control" id="nominal_potongan" name="nominal_potongan" required min="0" step="1000" 
+                           value="{{ '{:.0f}'.format(promo.nominal_potongan) if promo else '5000' }}">
+                </div>
+            </div>
+
+            <div class="form-group mt-2">
+                <div class="form-check">
+                    <input type="checkbox" id="aktif" name="aktif" value="1" 
+                           {{ 'checked' if (not promo) or (promo and promo.aktif) else '' }}>
+                    <label for="aktif" class="mb-0" style="cursor:pointer;">Promo Aktif</label>
+                </div>
+                <small style="color:var(--text-light); margin-left:26px;">Promo aktif akan otomatis diterapkan jika syarat berat terpenuhi.</small>
+            </div>
+
+            <hr style="border:0; border-top:1px solid #E5E7EB; margin:24px 0;">
+
+            <div class="d-flex justify-between">
+                <a href="{{ url_for('owner_promo.promo_list') }}" class="btn" style="background:#F3F4F6; color:var(--text-dark);">Batal</a>
+                <button type="submit" class="btn btn-primary">
+                    {{ 'Simpan Perubahan' if mode == 'edit' else 'Tambah Promo' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

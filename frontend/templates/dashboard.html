@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% set active_menu = 'dashboard' %}
+
+{% block content %}
+<!-- Welcome Banner -->
+<div class="welcome-banner">
+    <div class="welcome-text">
+        <h2>Selamat Datang, {{ session.get('nama', 'Kasir') }}!</h2>
+        <p>Semoga harimu menyenangkan. Berikut ringkasan cucian hari ini.</p>
+    </div>
+    <a href="{{ url_for('transaksi.transaksi_baru') }}" class="btn-new-transaction" id="btnNewTransaction">
+        <i class="bi bi-plus-lg"></i> Buat Transaksi Baru
+    </a>
+</div>
+
+<!-- Status Cards -->
+<div class="status-cards">
+    <div class="status-card status-card-antrian">
+        <div class="status-card-icon-wrap status-icon-orange">
+            <i class="bi bi-hourglass-split"></i>
+        </div>
+        <div class="status-card-info">
+            <div class="status-card-label">Menunggu Antrian</div>
+            <div class="status-card-value">{{ status_counts.antrian }}</div>
+            <div class="status-card-sub">Nota</div>
+        </div>
+    </div>
+    <div class="status-card status-card-dicuci">
+        <div class="status-card-icon-wrap status-icon-blue">
+            <i class="bi bi-basket3"></i>
+        </div>
+        <div class="status-card-info">
+            <div class="status-card-label">Sedang Dicuci</div>
+            <div class="status-card-value">{{ status_counts.sedang_dicuci }}</div>
+            <div class="status-card-sub">Nota</div>
+        </div>
+    </div>
+    <div class="status-card status-card-siap">
+        <div class="status-card-icon-wrap status-icon-green">
+            <i class="bi bi-check-circle"></i>
+        </div>
+        <div class="status-card-info">
+            <div class="status-card-label">Siap Diambil</div>
+            <div class="status-card-value">{{ status_counts.siap_diambil }}</div>
+            <div class="status-card-sub">Nota</div>
+        </div>
+    </div>
+</div>
+
+<!-- Cucian Aktif Table -->
+<div class="card">
+    <div class="card-header">
+        <h3>📌 Cucian Aktif</h3>
+    </div>
+    <div class="card-body">
+        <div class="table-container">
+            <table class="data-table" id="tableCucianAktif">
+                <thead>
+                    <tr>
+                        <th>ID Nota</th>
+                        <th>Pelanggan</th>
+                        <th>Layanan</th>
+                        <th>Status Cucian</th>
+                        <th>Perbarui Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if cucian_aktif %}
+                        {% for item in cucian_aktif %}
+                        <tr>
+                            <td><span class="link-nota">{{ item.kode_transaksi }}</span></td>
+                            <td>{{ item.nama_pelanggan or '-' }}</td>
+                            <td>{{ item.layanan_list or '-' }}</td>
+                            <td>
+                                {% if item.status_cucian == 'antrian' %}
+                                    <span class="badge badge-antrian">Antrian</span>
+                                {% elif item.status_cucian == 'sedang_dicuci' %}
+                                    <span class="badge badge-sedang_dicuci">Sedang dicuci</span>
+                                {% elif item.status_cucian == 'siap_diambil' %}
+                                    <span class="badge badge-siap_diambil">Siap Diambil</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.status_cucian == 'antrian' %}
+                                    <button class="btn-status btn-status-cuci btn-update-status"
+                                            data-id="{{ item.id_transaksi }}" id="btnStatus{{ item.id_transaksi }}">
+                                        Mulai Cuci &rarr;
+                                    </button>
+                                {% elif item.status_cucian == 'sedang_dicuci' or item.status_cucian == 'siap_diambil' %}
+                                    <button class="btn-status btn-status-selesai btn-update-status"
+                                            data-id="{{ item.id_transaksi }}" id="btnStatus{{ item.id_transaksi }}">
+                                        Tandai Selesai ✓
+                                    </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">🎉</div>
+                                    <div class="empty-state-text">Tidak ada cucian aktif saat ini</div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

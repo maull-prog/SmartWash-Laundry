@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% set active_menu = 'karyawan' %}
+
+{% block content %}
+<div class="d-flex justify-between align-center mb-3">
+    <h2 class="mb-0" style="font-size:20px;">Daftar Karyawan (Kasir)</h2>
+    <a href="{{ url_for('owner_karyawan.karyawan_tambah') }}" class="btn btn-primary">➕ Tambah Karyawan Baru</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>NAMA KARYAWAN</th>
+                        <th>USERNAME</th>
+                        <th>NO WHATSAPP</th>
+                        <th>STATUS</th>
+                        <th style="text-align:center;">AKSI</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for k in karyawan %}
+                    <tr>
+                        <td><strong>K-{{ '{:02d}'.format(k.id_pengguna) }}</strong></td>
+                        <td>{{ k.nama_lengkap }}</td>
+                        <td><code>{{ k.username }}</code></td>
+                        <td>{{ k.no_hp or '-' }}</td>
+                        <td>
+                            {% if k.aktif %}
+                                <span class="badge badge-aktif">Aktif</span>
+                            {% else %}
+                                <span class="badge badge-nonaktif">Non-Aktif</span>
+                            {% endif %}
+                        </td>
+                        <td style="text-align:center;">
+                            <!-- Reset Password -->
+                            <form action="{{ url_for('owner_karyawan.karyawan_reset_password', id=k.id_pengguna) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn-action btn-action-reset" 
+                                        data-confirm="Reset password untuk {{ k.nama_lengkap }}?" title="Reset Password">🔑</button>
+                            </form>
+                            
+                            <!-- Edit -->
+                            <a href="{{ url_for('owner_karyawan.karyawan_edit', id=k.id_pengguna) }}" 
+                               class="btn-action btn-action-edit" title="Edit">✏️</a>
+                               
+                            <!-- Delete -->
+                            <form action="{{ url_for('owner_karyawan.karyawan_hapus', id=k.id_pengguna) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn-action btn-action-delete" 
+                                        data-confirm="Apakah Anda yakin ingin menghapus karyawan ini?" title="Hapus">🗑</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center" style="padding:40px;color:#9CA3AF;">Belum ada data karyawan</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% set active_menu = 'riwayat' %}
+
+{% block content %}
+<!-- Filter & Search Bar -->
+<div class="card mb-3">
+    <div class="card-body" style="padding: 16px 20px;">
+        <form method="GET" action="{{ url_for('laporan.riwayat_owner') }}" id="filterForm">
+            <div class="d-flex justify-between flex-wrap gap-3 align-center">
+                <div class="filter-row mb-0">
+                    <div class="d-flex align-center gap-2">
+                        <label for="dari">Dari:</label>
+                        <input type="date" id="dari" name="dari" value="{{ dari }}">
+                    </div>
+                    <div class="d-flex align-center gap-2">
+                        <label for="sampai">Sampai:</label>
+                        <input type="date" id="sampai" name="sampai" value="{{ sampai }}">
+                    </div>
+                    
+                    <div class="search-bar mb-0" style="width: 250px;">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" name="q" placeholder="Cari nota / pelanggan..." value="{{ q }}">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Terapkan Filter</button>
+                    <a href="{{ url_for('laporan.riwayat_owner') }}" class="btn" style="background:#F3F4F6; color:var(--text-dark);">Reset</a>
+                </div>
+
+                <div>
+                    <!-- Bulk PDF Export button for owner -->
+                    {% set export_url = url_for('laporan.export_riwayat_pdf', q=q, dari=dari, sampai=sampai) %}
+                    <a href="{{ export_url }}" class="btn-export" target="_blank">
+                        📥 Ekspor Laporan PDF
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="card">
+    <div class="card-header">
+        <h3>📋 Riwayat Seluruh Transaksi</h3>
+    </div>
+    <div class="card-body">
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID Nota</th>
+                        <th>Tanggal</th>
+                        <th>Pelanggan</th>
+                        <th>Kasir</th>
+                        <th>Status Cucian</th>
+                        <th style="text-align:right;">Total Omzet</th>
+                        <th style="text-align:center;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if transaksi_list %}
+                        {% set total_filtered = 0 %}
+                        {% for t in transaksi_list %}
+                        <tr>
+                            <td><span class="link-nota">{{ t.kode_transaksi }}</span></td>
+                            <td>{{ t.tgl_masuk.strftime('%d/%m/%Y %H:%M') if t.tgl_masuk else '-' }}</td>
+                            <td>
+                                {{ t.nama_pelanggan or '-' }}<br>
+                                <small class="text-muted">{{ t.no_hp_pelanggan or '' }}</small>
+                            </td>
+                            <td>{{ t.nama_kasir or '-' }}</td>
+                            <td>
+                                {% if t.status_cucian == 'antrian' %}
+                                    <span class="badge badge-antrian">Antrian</span>
+                                {% elif t.status_cucian == 'sedang_dicuci' %}
+                                    <span class="badge badge-sedang_dicuci">Sedang Dicuci</span>
+                                {% elif t.status_cucian == 'siap_diambil' %}
+                                    <span class="badge badge-siap_diambil">Siap Diambil</span>
+                                {% elif t.status_cucian == 'selesai' %}
+                                    <span class="badge badge-selesai">Selesai</span>
+                                {% endif %}
+                            </td>
+                            <td style="text-align:right;" class="text-price">
+                                Rp {{ '{:,.0f}'.format(t.total_harga).replace(',', '.') if t.total_harga else '0' }}
+                            </td>
+                            <td style="text-align:center;">
+                                <button class="btn-action btn-action-view btn-detail-view"
+                                        data-id="{{ t.id_transaksi }}" title="Detail">👁</button>
+                                <a href="{{ url_for('laporan.cetak_nota', kode_transaksi=t.kode_transaksi) }}"
+                                   class="btn-action btn-action-print" target="_blank" title="Cetak Nota">🖨</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="7">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">📭</div>
+                                    <div class="empty-state-text">Tidak ada transaksi yang cocok dengan filter</div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% set active_menu = 'transaksi_baru' %}
+
+{% block content %}
+<form id="formTransaksi" method="POST" action="{{ url_for('transaksi.simpan_transaksi') }}">
+    <input type="hidden" name="status_bayar" id="statusBayar" value="belum">
+    <div class="transaksi-layout">
+        <!-- ── Kolom Kiri: Form Input ── -->
+        <div>
+            <!-- Data Pelanggan -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>👤 Data Pelanggan</h3>
+                    <span class="badge badge-aktif" id="vipBadge" style="display:none;">⭐ VIP Member</span>
+                </div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="namaPelanggan">Nama Pelanggan *</label>
+                            <input type="text" class="form-control" id="namaPelanggan" name="nama_pelanggan" required placeholder="Nama pelanggan">
+                        </div>
+                        <div class="form-group">
+                            <label for="noHpPelanggan">No WhatsApp</label>
+                            <input type="text" class="form-control" id="noHpPelanggan" name="no_hp" placeholder="08xx-xxxx-xxxx">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="alamatPelanggan">Alamat</label>
+                        <input type="text" class="form-control" id="alamatPelanggan" name="alamat" placeholder="Alamat pelanggan">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Berat Pakaian -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>⚖️ Berat Pakaian (Kg)</h3>
+                </div>
+                <div class="card-body">
+                    <div class="weight-stepper">
+                        <button type="button" id="weightMinus">−</button>
+                        <input type="number" id="beratKg" name="berat_kg" value="1.0" min="0.5" step="0.5">
+                        <button type="button" id="weightPlus">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Promo & Member Poin -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>🎁 Promo & Tukar Poin</h3>
+                    <span class="badge badge-sedang_dicuci" id="poinBadge" style="display:none;">Poin: <strong id="poinValue">0</strong></span>
+                </div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="promoSelect">Pilih Promo</label>
+                            <select class="form-control" id="promoSelect" name="id_promo">
+                                <option value="">-- Tidak pakai promo --</option>
+                                {% for p in promo_list %}
+                                <option value="{{ p.id_promo }}" data-min-kg="{{ p.syarat_min_kg }}" data-diskon="{{ p.nominal_potongan }}">
+                                    {{ p.nama_promo }} (Min {{ p.syarat_min_kg }}Kg - Diskon Rp {{ '{:,.0f}'.format(p.nominal_potongan).replace(',', '.') }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="tukarPoin">Tukar Poin (1 Poin = Rp 1.000)</label>
+                            <input type="number" class="form-control" id="tukarPoin" name="tukar_poin" placeholder="0" min="0" value="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pilih Layanan -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>🧺 Pilih Layanan</h3>
+                </div>
+                <div class="card-body">
+                    <div class="layanan-grid">
+                        {% for lay in layanan_list %}
+                        <div class="layanan-card"
+                             data-id="{{ lay.id_layanan }}"
+                             data-nama="{{ lay.nama_layanan }}"
+                             data-kategori="{{ lay.kategori }}"
+                             data-harga-kg="{{ lay.harga_per_kg }}"
+                             data-harga-satuan="{{ lay.harga_satuan }}"
+                             id="layananCard{{ lay.id_layanan }}">
+                            <div class="layanan-card-name">{{ lay.nama_layanan }}</div>
+                            <div class="layanan-card-price">
+                                {% if lay.kategori == 'Layanan' %}
+                                    Rp {{ '{:,.0f}'.format(lay.harga_per_kg).replace(',', '.') }} / kg
+                                {% else %}
+                                    Rp {{ '{:,.0f}'.format(lay.harga_satuan).replace(',', '.') }} / pcs
+                                {% endif %}
+                            </div>
+                            <span class="layanan-card-badge {{ 'layanan-card-badge-layanan' if lay.kategori == 'Layanan' else 'layanan-card-badge-addon' }}">
+                                {{ lay.kategori }}
+                            </span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Kolom Kanan: Ringkasan Pesanan ── -->
+        <div class="order-summary">
+            <h3>📋 Ringkasan Pesanan</h3>
+
+            <div class="order-items" id="orderItems">
+                <div class="empty-state" style="padding:20px">
+                    <div style="font-size:24px;margin-bottom:8px">📦</div>
+                    <div style="font-size:12px;color:#9CA3AF">Belum ada layanan dipilih</div>
+                </div>
+            </div>
+
+            <div class="order-totals">
+                <div class="order-total-row">
+                    <span>Subtotal</span>
+                    <span id="orderSubtotal">Rp 0</span>
+                </div>
+                <div class="order-total-row" style="display:none;">
+                    <span>Diskon Promo</span>
+                    <span class="order-discount" id="orderDiskon">- Rp 0</span>
+                </div>
+                <div class="order-grand-total">
+                    <span class="order-grand-total-label">TOTAL BAYAR</span>
+                    <span class="order-grand-total-value" id="orderTotal">Rp 0</span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-confirm" id="btnConfirmOrder">
+                ✅ Konfirmasi Pesanan
+            </button>
+        </div>
+    </div>
+</form>
+
+<!-- Modal Konfirmasi Pembayaran -->
+<div class="modal-overlay" id="paymentModal" style="display:none;">
+    <div class="modal-payment">
+        <button type="button" class="modal-close" onclick="closePaymentModal()">✕</button>
+        <h3>Konfirmasi Pembayaran</h3>
+        <div class="payment-actions">
+            <button type="button" class="btn-bayar-nanti" onclick="submitOrder('belum')">Bayar Nanti</button>
+            <button type="button" class="btn-bayar-sekarang" onclick="submitOrder('lunas')">Bayar Sekarang</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Invoice -->
+<div class="modal-overlay" id="invoiceModal" style="display:none;">
+    <div class="modal-invoice-container">
+        <div class="invoice-actions no-print">
+            <h3>Cetak Struk</h3>
+            <button type="button" class="btn-cetak" onclick="window.print()">Cetak</button>
+            <button type="button" class="btn-close-invoice" onclick="closeInvoice()">Tutup</button>
+        </div>
+        <div class="invoice-content" id="invoicePrintArea">
+            <!-- Invoice content loaded via JS -->
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Promo data for auto-apply calculation
+    var promoData = [
+        {% for p in promo_list %}
+        {
+            id_promo: {{ p.id_promo }},
+            nama_promo: "{{ p.nama_promo }}",
+            syarat_min_kg: {{ p.syarat_min_kg }},
+            nominal_potongan: {{ p.nominal_potongan }}
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ];
+</script>
+{% endblock %}

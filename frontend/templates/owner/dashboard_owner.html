@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% set active_menu = 'dashboard' %}
+
+{% block content %}
+<!-- Status Cards -->
+<div class="summary-cards-wrapper">
+    <!-- Card 1: Total Pendapatan -->
+    <div class="summary-card">
+        <div class="summary-icon icon-green"><i class="bi bi-cash-coin"></i></div>
+        <div class="summary-info">
+            <div class="summary-label">Total Pendapatan (Bulan ini)</div>
+            <div class="summary-value">Rp {{ '{:,.0f}'.format(omzet_bulan_ini).replace(',', '.') }}</div>
+        </div>
+    </div>
+    
+    <!-- Card 2: Jumlah Transaksi -->
+    <div class="summary-card">
+        <div class="summary-icon icon-blue"><i class="bi bi-graph-up-arrow"></i></div>
+        <div class="summary-info">
+            <div class="summary-label">Jumlah Transaksi</div>
+            <div class="summary-value">{{ jumlah_transaksi }} <span class="summary-unit">Pesanan</span></div>
+        </div>
+    </div>
+    
+    <!-- Card 3: Cucian Selesai -->
+    <div class="summary-card">
+        <div class="summary-icon icon-green-outline"><i class="bi bi-check2-circle"></i></div>
+        <div class="summary-info">
+            <div class="summary-label">Cucian Selesai</div>
+            <div class="summary-value">{{ cucian_selesai }} <span class="summary-unit">Cucian</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart Section -->
+<div class="chart-section-card">
+    <div class="chart-header">
+        <div class="chart-title">
+            <span class="chart-title-icon"><i class="bi bi-bar-chart"></i></span> Grafik Pendapatan Mingguan
+        </div>
+        <div class="chart-filter-btn">
+            Bulan Ini (Juni 2026)
+        </div>
+    </div>
+    <div class="chart-body">
+        <canvas id="omzetChart" height="250"></canvas>
+    </div>
+</div>
+
+<!-- Transaksi Terbaru Table -->
+<div class="recent-trx-card">
+    <div class="recent-trx-header">
+        <div class="recent-trx-title">
+            <span class="recent-trx-icon"><i class="bi bi-list-ul"></i></span> Transaksi Terbaru
+        </div>
+        <a href="{{ url_for('laporan.export_riwayat_pdf') }}" class="btn-export-pdf" target="_blank">
+            <i class="bi bi-file-earmark-pdf"></i> Ekspor Laporan PDF
+        </a>
+    </div>
+    <div class="recent-trx-body">
+        <table class="minimal-table">
+            <thead>
+                <tr>
+                    <th>ID NOTA</th>
+                    <th>PELANGGAN</th>
+                    <th>LAYANAN</th>
+                    <th style="text-align: center;">STATUS CUCIAN</th>
+                    <th style="text-align: right;">TOTAL (RP)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for trx in transaksi_terbaru %}
+                <tr>
+                    <td class="text-blue">{{ trx.kode_transaksi }}</td>
+                    <td>{{ trx.nama_pelanggan }}</td>
+                    <td class="text-muted">{{ trx.layanan_list }}</td>
+                    <td style="text-align: center;">
+                        {% if trx.status_cucian == 'antrian' %}
+                            <span class="badge-pill badge-pill-antrian">Antrian</span>
+                        {% elif trx.status_cucian == 'sedang_dicuci' %}
+                            <span class="badge-pill badge-pill-sedang_dicuci">Sedang dicuci</span>
+                        {% elif trx.status_cucian == 'siap_diambil' %}
+                            <span class="badge-pill badge-pill-siap_diambil">Siap Diambil</span>
+                        {% elif trx.status_cucian == 'selesai' %}
+                            <span class="badge-pill badge-pill-selesai">Selesai</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: right; font-weight: 600;">{{ '{:,.0f}'.format(trx.total_harga).replace(',', '.') }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align:center; padding: 20px; color:#9CA3AF;">Belum ada transaksi</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('omzetChart');
+    if (ctx) {
+        // Create gradient-like coloring for the bars (from light to dark blue)
+        const barColors = [
+            '#BDE3F0', // Senin
+            '#12A6C8', // Selasa
+            '#A4D8E8', // Rabu
+            '#0D8BA8', // Kamis
+            '#C8EAF5', // Jumat
+            '#1D356A', // Sabtu
+            '#0A6E8C'  // Minggu
+        ];
+        
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ chart_labels | safe }},
+                datasets: [{
+                    label: 'Omzet (Rp)',
+                    data: {{ chart_data | safe }},
+                    backgroundColor: barColors,
+                    borderRadius: 4,
+                    borderWidth: 0,
+                    barPercentage: 0.9,
+                    categoryPercentage: 0.9
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let value = context.raw || 0;
+                                return 'Rp ' + value.toLocaleString('id-ID');
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false, drawBorder: false },
+                        ticks: { font: { family: 'Poppins', size: 12 }, color: '#4B5563' }
+                    },
+                    y: {
+                        display: false, // Hide Y axis like the mockup
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
