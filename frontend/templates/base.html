@@ -64,6 +64,11 @@
                         </a>
                     </li>
                 {% endif %}
+                    <li>
+                        <a href="{{ url_for('pelanggan.daftar_pelanggan') }}" class="{{ 'active' if active_menu == 'pelanggan' }}">
+                            <span class="menu-icon"><i class="bi bi-people"></i></span> Data Pelanggan
+                        </a>
+                    </li>
             </ul>
         </aside>
 

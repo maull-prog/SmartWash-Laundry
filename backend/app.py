@@ -53,6 +53,7 @@ def create_app():
     from routes.owner_layanan import owner_layanan_bp
     from routes.owner_karyawan import owner_karyawan_bp
     from routes.owner_promo import owner_promo_bp
+    from routes.pelanggan import pelanggan_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(transaksi_bp)
@@ -60,6 +61,7 @@ def create_app():
     app.register_blueprint(owner_layanan_bp)
     app.register_blueprint(owner_karyawan_bp)
     app.register_blueprint(owner_promo_bp)
+    app.register_blueprint(pelanggan_bp)
 
     # Default route
     @app.route('/')

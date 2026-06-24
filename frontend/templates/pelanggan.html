@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% set active_menu = 'pelanggan' %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h3>👥 Data Pelanggan & Membership</h3>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nama Pelanggan</th>
+                        <th>No WhatsApp</th>
+                        <th>Total Transaksi</th>
+                        <th>Poin Loyalitas</th>
+                        <th>Level Member</th>
+                        <th width="150px">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pel in pelanggan_list %}
+                    <tr>
+                        <td style="font-weight: 600;">{{ pel.nama }}</td>
+                        <td>{{ pel.no_hp if pel.no_hp else '-' }}</td>
+                        <td>{{ pel.total_transaksi }}x</td>
+                        <td>
+                            <span class="badge badge-sedang_dicuci">🪙 {{ pel.poin_loyalitas }} Poin</span>
+                        </td>
+                        <td>
+                            {% if pel.level_member == 'VIP' %}
+                                <span class="badge badge-aktif">⭐ VIP</span>
+                            {% else %}
+                                <span class="badge badge-antrian">Reguler</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if pel.level_member == 'VIP' %}
+                            <button type="button" class="btn btn-sm btn-outline-danger btn-toggle-vip" data-id="{{ pel.id_pelanggan }}" data-action="reguler">
+                                Cabut VIP
+                            </button>
+                            {% else %}
+                            <button type="button" class="btn btn-sm btn-outline-success btn-toggle-vip" data-id="{{ pel.id_pelanggan }}" data-action="VIP">
+                                Jadikan VIP
+                            </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center" style="padding: 30px; color: #9CA3AF;">Belum ada data pelanggan.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.btn-toggle-vip').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var id = this.getAttribute('data-id');
+                var action = this.getAttribute('data-action');
+                var confirmMsg = action === 'VIP' ? 'Jadikan pelanggan ini VIP?' : 'Cabut status VIP pelanggan ini?';
+                
+                if (confirm(confirmMsg)) {
+                    var originalText = this.innerHTML;
+                    this.innerHTML = 'Memproses...';
+                    this.disabled = true;
+                    
+                    fetch('/pelanggan/set_vip/' + id, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ action: action })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.reload();
+                        } else {
+                            alert('Gagal: ' + data.message);
+                            this.innerHTML = originalText;
+                            this.disabled = false;
+                        }
+                    })
+                    .catch(err => {
+                        alert('Terjadi kesalahan sistem.');
+                        this.innerHTML = originalText;
+                        this.disabled = false;
+                    });
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
