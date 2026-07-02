@@ -211,7 +211,7 @@
     let isVip = false; // Simpan status VIP pelanggan yang dipilih
 
     function doSearch(q) {
-        fetch(`/transaksi/cari_pelanggan?q=${encodeURIComponent(q)}`, {
+        fetch(`/transaksi/cari_pelanggan?q=${encodeURIComponent(q)}&_t=${Date.now()}`, {
             headers: {
                 'Accept': 'application/json'
             }
