@@ -101,8 +101,8 @@ document.addEventListener('DOMContentLoaded', function () {
                                     '<td>' + t.no_hp_pelanggan + '</td>' +
                                     '<td><span class="badge ' + statusClass + '">' + statusLabel + '</span></td>' +
                                     '<td>' +
-                                    '<button class="btn-action btn-action-view btn-detail-view" data-id="' + t.id_transaksi + '" title="Detail">👁</button> ' +
-                                    '<a href="/transaksi/cetak/' + t.kode_transaksi + '" class="btn-action btn-action-print" target="_blank" title="Cetak">🖨</a>' +
+                                    '<button class="btn-action btn-action-view btn-detail-view" data-id="' + t.id_transaksi + '" title="Detail"></button> ' +
+                                    '<a href="/transaksi/cetak/' + t.kode_transaksi + '" class="btn-action btn-action-print" target="_blank" title="Cetak"></a>' +
                                     '</td>' +
                                     '</tr>';
                                 tableBody.innerHTML += row;
@@ -333,7 +333,7 @@ function updateOrderSummary() {
     });
 
     if (selectedCards.length === 0) {
-        orderItemsContainer.innerHTML = '<div class="empty-state" style="padding:20px"><div style="font-size:24px;margin-bottom:8px">📦</div><div style="font-size:12px;color:#9CA3AF">Belum ada layanan dipilih</div></div>';
+        orderItemsContainer.innerHTML = '<div class="empty-state" style="padding:20px"><div style="font-size:24px;margin-bottom:8px"></div><div style="font-size:12px;color:#9CA3AF">Belum ada layanan dipilih</div></div>';
     }
 
     // Promo discount (manual)
@@ -507,7 +507,7 @@ function submitOrder(statusBayar) {
     
     if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '⏳ Menyimpan...';
+        submitBtn.innerHTML = ' Menyimpan...';
     }
 
     var formData = new FormData(form);
@@ -528,7 +528,7 @@ function submitOrder(statusBayar) {
             alert(data.message || 'Gagal menyimpan transaksi.');
             if (submitBtn) {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '✅ Konfirmasi Pesanan';
+                submitBtn.innerHTML = ' Konfirmasi Pesanan';
             }
         }
     })
@@ -537,7 +537,7 @@ function submitOrder(statusBayar) {
         alert('Terjadi kesalahan jaringan.');
         if (submitBtn) {
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '✅ Konfirmasi Pesanan';
+            submitBtn.innerHTML = ' Konfirmasi Pesanan';
         }
     });
 }

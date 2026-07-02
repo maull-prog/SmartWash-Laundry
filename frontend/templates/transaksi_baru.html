@@ -10,8 +10,8 @@
             <!-- Data Pelanggan -->
             <div class="card">
                 <div class="card-header">
-                    <h3>👤 Data Pelanggan</h3>
-                    <span class="badge badge-aktif" id="vipBadge" style="display:none;">⭐ VIP Member</span>
+                    <h3> Data Pelanggan</h3>
+                    <span class="badge badge-aktif" id="vipBadge" style="display:none;"> VIP Member</span>
                 </div>
                 <div class="card-body">
                     <div class="form-row">
@@ -43,7 +43,7 @@
             <!-- Berat Pakaian -->
             <div class="card">
                 <div class="card-header">
-                    <h3>⚖️ Berat Pakaian (Kg)</h3>
+                    <h3>️ Berat Pakaian (Kg)</h3>
                 </div>
                 <div class="card-body">
                     <div class="weight-stepper">
@@ -57,7 +57,7 @@
             <!-- Promo & Member Poin -->
             <div class="card">
                 <div class="card-header">
-                    <h3>🎁 Promo & Tukar Poin</h3>
+                    <h3> Promo & Tukar Poin</h3>
                     <span class="badge badge-sedang_dicuci" id="poinBadge" style="display:none;">Poin: <strong id="poinValue">0</strong></span>
                 </div>
                 <div class="card-body">
@@ -84,7 +84,7 @@
             <!-- Pilih Layanan -->
             <div class="card">
                 <div class="card-header">
-                    <h3>🧺 Pilih Layanan</h3>
+                    <h3> Pilih Layanan</h3>
                 </div>
                 <div class="card-body">
                     <div class="layanan-grid">
@@ -116,11 +116,11 @@
 
         <!-- ── Kolom Kanan: Ringkasan Pesanan ── -->
         <div class="order-summary">
-            <h3>📋 Ringkasan Pesanan</h3>
+            <h3> Ringkasan Pesanan</h3>
 
             <div class="order-items" id="orderItems">
                 <div class="empty-state" style="padding:20px">
-                    <div style="font-size:24px;margin-bottom:8px">📦</div>
+                    <div style="font-size:24px;margin-bottom:8px"></div>
                     <div style="font-size:12px;color:#9CA3AF">Belum ada layanan dipilih</div>
                 </div>
             </div>
@@ -131,7 +131,7 @@
                     <span id="orderSubtotal">Rp 0</span>
                 </div>
                 <div class="order-total-row" id="rowDiskonVip" style="display:none;">
-                    <span>⭐ Diskon VIP (10%)</span>
+                    <span> Diskon VIP (10%)</span>
                     <span class="order-discount" id="orderDiskonVip">- Rp 0</span>
                 </div>
                 <div class="order-total-row" id="rowDiskonPromo" style="display:none;">
@@ -145,7 +145,7 @@
             </div>
 
             <button type="submit" class="btn-confirm" id="btnConfirmOrder">
-                ✅ Konfirmasi Pesanan
+                 Konfirmasi Pesanan
             </button>
         </div>
     </div>
@@ -154,7 +154,7 @@
 <!-- Modal Konfirmasi Pembayaran -->
 <div class="modal-overlay" id="paymentModal" style="display:none;">
     <div class="modal-payment">
-        <button type="button" class="modal-close" onclick="closePaymentModal()">✕</button>
+        <button type="button" class="modal-close" onclick="closePaymentModal()"></button>
         <h3>Konfirmasi Pembayaran</h3>
         <div class="payment-actions">
             <button type="button" class="btn-bayar-nanti" onclick="submitOrder('belum')">Bayar Nanti</button>
@@ -249,7 +249,7 @@
                 <div style="display:flex; align-items:center; justify-content:space-between;">
                     <div>
                         <strong style="font-size:.95rem;">${p.nama}</strong>
-                        ${p.level_member === 'vip' ? '<span style="margin-left:6px; font-size:.75rem; background:#fef3c7; color:#92400e; padding:1px 7px; border-radius:999px;">⭐ VIP</span>' : ''}
+                        ${p.level_member === 'vip' ? '<span style="margin-left:6px; font-size:.75rem; background:#fef3c7; color:#92400e; padding:1px 7px; border-radius:999px;"> VIP</span>' : ''}
                         <div style="font-size:.8rem; color:#64748b; margin-top:2px;">${p.no_hp || 'No. HP belum tersimpan'}</div>
                     </div>
                     <div style="text-align:right; font-size:.8rem; color:#64748b;">
@@ -292,7 +292,7 @@
 
         // Tampilkan banner hijau
         bannerNama.textContent = p.nama;
-        const vipText = isVip ? ' · ⭐ VIP (diskon 10% otomatis)' : '';
+        const vipText = isVip ? ' ·  VIP (diskon 10% otomatis)' : '';
         bannerInfo.textContent = `Pelanggan lama · ${p.total_transaksi}× laundry · ${p.poin_loyalitas} poin loyalitas${vipText}`;
         banner.style.display = 'block';
     }

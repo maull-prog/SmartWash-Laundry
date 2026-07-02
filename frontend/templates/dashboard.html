@@ -50,7 +50,7 @@
 <!-- Cucian Aktif Table -->
 <div class="card">
     <div class="card-header">
-        <h3>📌 Cucian Aktif</h3>
+        <h3> Cucian Aktif</h3>
     </div>
     <div class="card-body">
         <div class="table-container">
@@ -89,7 +89,7 @@
                                 {% elif item.status_cucian == 'sedang_dicuci' or item.status_cucian == 'siap_diambil' %}
                                     <button class="btn-status btn-status-selesai btn-update-status"
                                             data-id="{{ item.id_transaksi }}" id="btnStatus{{ item.id_transaksi }}">
-                                        Tandai Selesai ✓
+                                        Tandai Selesai 
                                     </button>
                                 {% endif %}
                                 <a href="{{ url_for('transaksi.cetak_struk', id=item.id_transaksi) }}" target="_blank" class="btn-status" style="background: #e2e8f0; color: #475569; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; padding: 0;" title="Cetak Struk">
@@ -102,7 +102,7 @@
                         <tr>
                             <td colspan="5">
                                 <div class="empty-state">
-                                    <div class="empty-state-icon">🎉</div>
+                                    <div class="empty-state-icon"></div>
                                     <div class="empty-state-text">Tidak ada cucian aktif saat ini</div>
                                 </div>
                             </td>

@@ -68,16 +68,16 @@
 
     <!-- Header -->
     <div class="header">
-        <div class="header-icon">🧺</div>
+        <div class="header-icon"></div>
         <h1>Laporan Harian Smart Wash Laundry</h1>
         <p>Ringkasan Aktivitas & Pendapatan Hari Ini</p>
-        <span class="tanggal">📅 {{ tanggal }}</span>
+        <span class="tanggal"> {{ tanggal }}</span>
     </div>
 
     <!-- Body -->
     <div class="body">
         <p class="greeting">
-            Halo, <strong>{{ nama_owner }}</strong>! 👋<br>
+            Halo, <strong>{{ nama_owner }}</strong>! <br>
             Berikut adalah laporan otomatis aktivitas laundry Anda untuk hari <strong>{{ tanggal }}</strong>. 
             Semua data dikumpulkan secara real-time dari sistem.
         </p>
@@ -108,7 +108,7 @@
 
         <!-- Layanan Terlaris -->
         {% if layanan_terlaris %}
-        <p class="section-title">🏆 Layanan Terlaris Hari Ini</p>
+        <p class="section-title"> Layanan Terlaris Hari Ini</p>
         {% for lyr in layanan_terlaris %}
         <div class="layanan-item">
             <div>
@@ -122,7 +122,7 @@
         {% endif %}
 
         <!-- Daftar Transaksi -->
-        <p class="section-title">📋 Detail Transaksi Hari Ini</p>
+        <p class="section-title"> Detail Transaksi Hari Ini</p>
         {% if transaksi_list %}
         <table class="transaksi-table">
             <thead>

@@ -108,7 +108,7 @@
                     {% if messages %}
                         {% for category, message in messages %}
                             <div class="flash-message flash-{{ category }}">
-                                {% if category == 'success' %}✅{% else %}❌{% endif %}
+                                {% if category == 'success' %}{% else %}{% endif %}
                                 {{ message }}
                             </div>
                         {% endfor %}

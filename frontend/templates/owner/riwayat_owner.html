@@ -18,7 +18,7 @@
                     </div>
                     
                     <div class="search-bar mb-0" style="width: 250px;">
-                        <span class="search-icon">🔍</span>
+                        <span class="search-icon"></span>
                         <input type="text" name="q" placeholder="Cari nota / pelanggan..." value="{{ q }}">
                     </div>
                     
@@ -30,7 +30,7 @@
                     <!-- Bulk PDF Export button for owner -->
                     {% set export_url = url_for('laporan.export_riwayat_pdf', q=q, dari=dari, sampai=sampai) %}
                     <a href="{{ export_url }}" class="btn-export" target="_blank">
-                        📥 Ekspor Laporan PDF
+                         Ekspor Laporan PDF
                     </a>
                 </div>
             </div>
@@ -41,7 +41,7 @@
 <!-- Table -->
 <div class="card">
     <div class="card-header">
-        <h3>📋 Riwayat Seluruh Transaksi</h3>
+        <h3> Riwayat Seluruh Transaksi</h3>
     </div>
     <div class="card-body">
         <div class="table-container">
@@ -85,9 +85,9 @@
                             </td>
                             <td style="text-align:center;">
                                 <button class="btn-action btn-action-view btn-detail-view"
-                                        data-id="{{ t.id_transaksi }}" title="Detail">👁</button>
+                                        data-id="{{ t.id_transaksi }}" title="Detail"></button>
                                 <a href="{{ url_for('laporan.cetak_nota', kode_transaksi=t.kode_transaksi) }}"
-                                   class="btn-action btn-action-print" target="_blank" title="Cetak Nota">🖨</a>
+                                   class="btn-action btn-action-print" target="_blank" title="Cetak Nota"></a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -95,7 +95,7 @@
                         <tr>
                             <td colspan="7">
                                 <div class="empty-state">
-                                    <div class="empty-state-icon">📭</div>
+                                    <div class="empty-state-icon"></div>
                                     <div class="empty-state-text">Tidak ada transaksi yang cocok dengan filter</div>
                                 </div>
                             </td>

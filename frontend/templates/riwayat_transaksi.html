@@ -4,14 +4,14 @@
 {% block content %}
 <!-- Search Bar -->
 <div class="search-bar">
-    <span class="search-icon">🔍</span>
+    <span class="search-icon"></span>
     <input type="text" id="searchRiwayat" placeholder="Cari id nota / nama pelanggan..." value="{{ q }}">
 </div>
 
 <!-- Table -->
 <div class="card">
     <div class="card-header">
-        <h3>📋 Nota Pelanggan</h3>
+        <h3> Nota Pelanggan</h3>
     </div>
     <div class="card-body">
         <div class="table-container">
@@ -47,9 +47,9 @@
                             </td>
                             <td>
                                 <button class="btn-action btn-action-view btn-detail-view"
-                                        data-id="{{ t.id_transaksi }}" title="Detail" id="btnDetail{{ t.id_transaksi }}">👁</button>
+                                        data-id="{{ t.id_transaksi }}" title="Detail" id="btnDetail{{ t.id_transaksi }}"></button>
                                 <a href="{{ url_for('transaksi.cetak_struk', id=t.id_transaksi) }}"
-                                   class="btn-action btn-action-print" target="_blank" title="Cetak Nota">🖨</a>
+                                   class="btn-action btn-action-print" target="_blank" title="Cetak Nota"></a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -57,7 +57,7 @@
                         <tr>
                             <td colspan="6">
                                 <div class="empty-state">
-                                    <div class="empty-state-icon">📭</div>
+                                    <div class="empty-state-icon"></div>
                                     <div class="empty-state-text">Belum ada transaksi</div>
                                 </div>
                             </td>

@@ -4,7 +4,7 @@
 {% block content %}
 <div class="d-flex justify-between align-center mb-3">
     <h2 class="mb-0" style="font-size:20px;">Daftar Karyawan (Kasir)</h2>
-    <a href="{{ url_for('owner_karyawan.karyawan_tambah') }}" class="btn btn-primary">➕ Tambah Karyawan Baru</a>
+    <a href="{{ url_for('owner_karyawan.karyawan_tambah') }}" class="btn btn-primary"> Tambah Karyawan Baru</a>
 </div>
 
 <div class="card">
@@ -39,17 +39,17 @@
                             <!-- Reset Password -->
                             <form action="{{ url_for('owner_karyawan.karyawan_reset_password', id=k.id_pengguna) }}" method="POST" style="display:inline;">
                                 <button type="submit" class="btn-action btn-action-reset" 
-                                        data-confirm="Reset password untuk {{ k.nama_lengkap }}?" title="Reset Password">🔑</button>
+                                        data-confirm="Reset password untuk {{ k.nama_lengkap }}?" title="Reset Password"></button>
                             </form>
                             
                             <!-- Edit -->
                             <a href="{{ url_for('owner_karyawan.karyawan_edit', id=k.id_pengguna) }}" 
-                               class="btn-action btn-action-edit" title="Edit">✏️</a>
+                               class="btn-action btn-action-edit" title="Edit">️</a>
                                
                             <!-- Delete -->
                             <form action="{{ url_for('owner_karyawan.karyawan_hapus', id=k.id_pengguna) }}" method="POST" style="display:inline;">
                                 <button type="submit" class="btn-action btn-action-delete" 
-                                        data-confirm="Apakah Anda yakin ingin menghapus karyawan ini?" title="Hapus">🗑</button>
+                                        data-confirm="Apakah Anda yakin ingin menghapus karyawan ini?" title="Hapus"></button>
                             </form>
                         </td>
                     </tr>

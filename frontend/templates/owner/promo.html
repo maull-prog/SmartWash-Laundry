@@ -4,7 +4,7 @@
 {% block content %}
 <div class="d-flex justify-between align-center mb-3">
     <h2 class="mb-0" style="font-size:20px;">Daftar Promo</h2>
-    <a href="{{ url_for('owner_promo.promo_tambah') }}" class="btn btn-primary">➕ Tambah Promo Baru</a>
+    <a href="{{ url_for('owner_promo.promo_tambah') }}" class="btn btn-primary"> Tambah Promo Baru</a>
 </div>
 
 <div class="card">
@@ -41,15 +41,15 @@
                         </td>
                         <td style="text-align:center;">
                             <a href="{{ url_for('owner_promo.promo_edit', id=p.id_promo) }}" 
-                               class="btn-action btn-action-edit" title="Edit">✏️</a>
+                               class="btn-action btn-action-edit" title="Edit">️</a>
                                
                             <form action="{{ url_for('owner_promo.promo_toggle_aktif', id=p.id_promo) }}" method="POST" style="display:inline;">
                                 {% if p.aktif %}
                                 <button type="submit" class="btn-action btn-action-deactivate" 
-                                        data-confirm="Nonaktifkan promo ini?" title="Nonaktifkan">🚫</button>
+                                        data-confirm="Nonaktifkan promo ini?" title="Nonaktifkan"></button>
                                 {% else %}
                                 <button type="submit" class="btn-action btn-action-activate" 
-                                        data-confirm="Aktifkan kembali promo ini?" title="Aktifkan">✅</button>
+                                        data-confirm="Aktifkan kembali promo ini?" title="Aktifkan"></button>
                                 {% endif %}
                             </form>
                         </td>

@@ -4,7 +4,7 @@
 {% block content %}
 <div class="d-flex justify-between align-center mb-3">
     <h2 class="mb-0" style="font-size:20px;">Daftar Layanan</h2>
-    <a href="{{ url_for('owner_layanan.layanan_tambah') }}" class="btn btn-primary">➕ Tambah Layanan Baru</a>
+    <a href="{{ url_for('owner_layanan.layanan_tambah') }}" class="btn btn-primary"> Tambah Layanan Baru</a>
 </div>
 
 <div class="card">
@@ -47,11 +47,11 @@
                         <td class="text-blue">{{ l.kategori }}</td>
                         <td style="text-align:center;">
                             <a href="{{ url_for('owner_layanan.layanan_edit', id=l.id_layanan) }}" 
-                               class="btn-action btn-action-edit" title="Edit">✏️</a>
+                               class="btn-action btn-action-edit" title="Edit">️</a>
                             
                             <form action="{{ url_for('owner_layanan.layanan_hapus', id=l.id_layanan) }}" method="POST" style="display:inline;">
                                 <button type="submit" class="btn-action btn-action-delete" 
-                                        data-confirm="Apakah Anda yakin ingin menghapus layanan ini?" title="Hapus">🗑</button>
+                                        data-confirm="Apakah Anda yakin ingin menghapus layanan ini?" title="Hapus"></button>
                             </form>
                         </td>
                     </tr>
