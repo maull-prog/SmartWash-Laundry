@@ -130,7 +130,11 @@
                     <span>Subtotal</span>
                     <span id="orderSubtotal">Rp 0</span>
                 </div>
-                <div class="order-total-row" style="display:none;">
+                <div class="order-total-row" id="rowDiskonVip" style="display:none;">
+                    <span>⭐ Diskon VIP (10%)</span>
+                    <span class="order-discount" id="orderDiskonVip">- Rp 0</span>
+                </div>
+                <div class="order-total-row" id="rowDiskonPromo" style="display:none;">
                     <span>Diskon Promo</span>
                     <span class="order-discount" id="orderDiskon">- Rp 0</span>
                 </div>
@@ -204,15 +208,19 @@
     const bannerInfo     = document.getElementById('bannerInfoPelanggan');
 
     let debounceTimer;
+    let isVip = false; // Simpan status VIP pelanggan yang dipilih
 
     namaInput.addEventListener('input', function() {
         clearTimeout(debounceTimer);
         const q = this.value.trim();
 
         // Reset banner & badge jika user mengetik ulang
+        isVip = false;
         banner.style.display = 'none';
         vipBadge.style.display = 'none';
         poinBadge.style.display = 'none';
+        document.getElementById('rowDiskonVip').style.display = 'none';
+        recalcTotal();
 
         if (q.length < 1) {
             dropdown.style.display = 'none';
@@ -262,13 +270,17 @@
     }
 
     function pilihPelanggan(p) {
-        namaInput.value  = p.nama;
-        noHpInput.value  = p.no_hp;
+        namaInput.value   = p.nama;
+        noHpInput.value   = p.no_hp;
         alamatInput.value = p.alamat;
         dropdown.style.display = 'none';
 
+        // Set status VIP & hitung ulang total
+        isVip = (p.level_member === 'vip');
+        recalcTotal();
+
         // Tampilkan badge VIP
-        if (p.level_member === 'vip') {
+        if (isVip) {
             vipBadge.style.display = 'inline-flex';
         }
 
@@ -280,7 +292,8 @@
 
         // Tampilkan banner hijau
         bannerNama.textContent = p.nama;
-        bannerInfo.textContent = `Pelanggan lama · ${p.total_transaksi}× laundry · ${p.poin_loyalitas} poin loyalitas`;
+        const vipText = isVip ? ' · ⭐ VIP (diskon 10% otomatis)' : '';
+        bannerInfo.textContent = `Pelanggan lama · ${p.total_transaksi}× laundry · ${p.poin_loyalitas} poin loyalitas${vipText}`;
         banner.style.display = 'block';
     }
 

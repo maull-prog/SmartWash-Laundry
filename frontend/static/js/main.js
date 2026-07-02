@@ -376,22 +376,37 @@ function updateOrderSummary() {
 
     if (subtotalEl) subtotalEl.textContent = formatRupiah(subtotal);
 
-    if (diskonEl) {
-        if (totalDiskon > 0) {
-            var diskonTexts = [];
-            if (diskonPromo > 0) diskonTexts.push(promoName + ' (' + formatRupiah(diskonPromo) + ')');
-            if (diskonPoin > 0) diskonTexts.push('Poin (' + formatRupiah(diskonPoin) + ')');
-            if (isVip) diskonTexts.push('VIP 10% (' + formatRupiah(diskonVip) + ')');
-            
-            diskonEl.textContent = '- ' + formatRupiah(totalDiskon) + ' [' + diskonTexts.join(' + ') + ']';
-            diskonEl.parentElement.style.display = 'flex';
+    // Baris Diskon VIP (terpisah)
+    var rowVip = document.getElementById('rowDiskonVip');
+    var diskonVipEl = document.getElementById('orderDiskonVip');
+    if (rowVip && diskonVipEl) {
+        if (diskonVip > 0) {
+            diskonVipEl.textContent = '- ' + formatRupiah(diskonVip);
+            rowVip.style.display = 'flex';
         } else {
-            diskonEl.parentElement.style.display = 'none';
+            rowVip.style.display = 'none';
+        }
+    }
+
+    // Baris Diskon Promo
+    var rowPromo = document.getElementById('rowDiskonPromo');
+    if (diskonEl && rowPromo) {
+        if (diskonPromo > 0 || diskonPoin > 0) {
+            var diskonTexts = [];
+            if (diskonPromo > 0) diskonTexts.push('Promo');
+            if (diskonPoin > 0) diskonTexts.push('Poin');
+            diskonEl.textContent = '- ' + formatRupiah(diskonPromo + diskonPoin);
+            rowPromo.style.display = 'flex';
+        } else {
+            rowPromo.style.display = 'none';
         }
     }
 
     if (totalEl) totalEl.textContent = formatRupiah(grandTotal);
 }
+
+// Alias agar bisa dipanggil dari inline script di template
+var recalcTotal = updateOrderSummary;
 
 function bindDetailButtons() {
     document.querySelectorAll('.btn-detail-view').forEach(function (btn) {

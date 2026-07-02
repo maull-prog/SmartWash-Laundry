@@ -247,9 +247,9 @@ def simpan_transaksi():
 
         # 6. Diskon VIP 10%
         diskon_vip = 0
-        if level_member == 'VIP':
+        if level_member and level_member.lower() == 'vip':
             diskon_vip = total_harga * 0.10
-
+        
         diskon = diskon_promo + diskon_poin + diskon_vip
         total_bayar = max(total_harga - diskon, 0)
         
