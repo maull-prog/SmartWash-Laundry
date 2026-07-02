@@ -118,7 +118,32 @@ document.addEventListener('DOMContentLoaded', function () {
     // ── Transaksi Baru: Service card selection ──
     document.querySelectorAll('.layanan-card').forEach(function (card) {
         card.addEventListener('click', function () {
+            var kategori = card.getAttribute('data-kategori');
+            var nama = card.getAttribute('data-nama');
+            
+            // Logika Add-on (Pewangi Ekstra dkk)
+            if (kategori === 'Add-on') {
+                var adaLayananUtama = Array.from(document.querySelectorAll('.layanan-card.selected')).some(c => c.getAttribute('data-kategori') === 'Layanan');
+                if (!card.classList.contains('selected') && !adaLayananUtama) {
+                    alert('Layanan tambahan (' + nama + ') hanya bisa diinput jika Anda melakukan laundry atau setrika (memilih minimal satu Layanan utama).');
+                    return;
+                }
+            }
+            
             card.classList.toggle('selected');
+            
+            // Jika membatalkan layanan utama terakhir, hapus juga pilihan Add-on
+            if (kategori === 'Layanan' && !card.classList.contains('selected')) {
+                var adaLayananUtamaLain = Array.from(document.querySelectorAll('.layanan-card.selected')).some(c => c.getAttribute('data-kategori') === 'Layanan');
+                if (!adaLayananUtamaLain) {
+                    document.querySelectorAll('.layanan-card.selected').forEach(c => {
+                        if (c.getAttribute('data-kategori') === 'Add-on') {
+                            c.classList.remove('selected');
+                        }
+                    });
+                }
+            }
+
             updateOrderSummary();
         });
     });
