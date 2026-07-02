@@ -109,7 +109,7 @@ def cari_pelanggan():
         cur.execute("""
             SELECT id_pelanggan, nama, no_hp, alamat, poin_loyalitas, level_member, total_transaksi
             FROM pelanggan
-            WHERE nama LIKE %s
+            WHERE LOWER(nama) LIKE LOWER(%s)
             ORDER BY total_transaksi DESC, nama ASC
             LIMIT 8
         """, (f'{q}%',))
