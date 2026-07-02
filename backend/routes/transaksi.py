@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify, make_response
 from app import mysql, login_required
 from datetime import datetime, timedelta
 from services.whatsapp import kirim_notifikasi_siap
@@ -507,3 +507,125 @@ def invoice_transaksi(id):
         'status_bayar': trx['status_bayar'],
         'details': detail_items
     })
+
+
+@transaksi_bp.route('/transaksi/struk/<int:id>')
+@login_required
+def cetak_struk(id):
+    import io
+    from reportlab.pdfgen import canvas
+    from reportlab.lib.pagesizes import mm
+
+    cur = mysql.connection.cursor()
+    
+    # Ambil data transaksi
+    cur.execute("""
+        SELECT t.*, p.nama AS nama_pelanggan, p.no_hp
+        FROM transaksi t
+        LEFT JOIN pelanggan p ON t.id_pelanggan = p.id_pelanggan
+        WHERE t.id_transaksi = %s
+    """, (id,))
+    trx = cur.fetchone()
+
+    if not trx:
+        cur.close()
+        return "Transaksi tidak ditemukan", 404
+
+    # Ambil detail layanan
+    cur.execute("""
+        SELECT dt.*, l.nama_layanan
+        FROM detail_transaksi dt
+        JOIN layanan l ON dt.id_layanan = l.id_layanan
+        WHERE dt.id_transaksi = %s
+    """, (id,))
+    details = cur.fetchall()
+    cur.close()
+
+    # Setup ukuran kertas thermal (80mm width, panjang dinamis)
+    panjang_kertas = 100 + (len(details) * 15) + 60
+    
+    buffer = io.BytesIO()
+    c = canvas.Canvas(buffer, pagesize=(80*mm, panjang_kertas*mm))
+    
+    # Koordinat awal (dari bawah)
+    y = panjang_kertas * mm - 15*mm
+    x_center = 40 * mm
+    x_left = 5 * mm
+    x_right = 75 * mm
+    
+    c.setFont("Helvetica-Bold", 14)
+    c.drawCentredString(x_center, y, "SMART WASH LAUNDRY")
+    y -= 6*mm
+    c.setFont("Helvetica", 9)
+    c.drawCentredString(x_center, y, "Jl. Bersih No. 1, Jakarta")
+    y -= 10*mm
+    
+    c.setDash(2, 2)
+    c.line(x_left, y, x_right, y)
+    c.setDash()
+    y -= 8*mm
+    
+    c.setFont("Helvetica", 9)
+    c.drawString(x_left, y, f"Nota: {trx['kode_transaksi']}")
+    y -= 5*mm
+    c.drawString(x_left, y, f"Tgl: {trx['tgl_masuk'].strftime('%d %b %Y %H:%M')}")
+    y -= 5*mm
+    c.drawString(x_left, y, f"Plg: {trx['nama_pelanggan'] or '-'}")
+    y -= 8*mm
+    
+    c.setDash(2, 2)
+    c.line(x_left, y, x_right, y)
+    c.setDash()
+    y -= 8*mm
+    
+    # Detail Transaksi
+    c.setFont("Helvetica-Bold", 9)
+    for dt in details:
+        c.drawString(x_left, y, dt['nama_layanan'][:20])
+        y -= 5*mm
+        c.setFont("Helvetica", 9)
+        qty_str = f"{dt['berat_kg']}Kg" if dt['berat_kg'] > 0 else f"{dt['qty']}x"
+        c.drawString(x_left + 5*mm, y, f"{qty_str} @ {int(dt['harga_saat_transaksi'])}")
+        c.drawRightString(x_right, y, f"{int(dt['subtotal'])}")
+        y -= 6*mm
+        c.setFont("Helvetica-Bold", 9)
+        
+    y -= 2*mm
+    c.setDash(2, 2)
+    c.line(x_left, y, x_right, y)
+    c.setDash()
+    y -= 8*mm
+    
+    # Total
+    c.setFont("Helvetica", 9)
+    c.drawString(x_left, y, "Diskon:")
+    c.drawRightString(x_right, y, f"- {int(trx['diskon'])}")
+    y -= 6*mm
+    
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(x_left, y, "TOTAL:")
+    c.drawRightString(x_right, y, f"Rp {int(trx['total_harga'])}")
+    y -= 6*mm
+    
+    c.setFont("Helvetica", 9)
+    c.drawString(x_left, y, "Status:")
+    c.drawRightString(x_right, y, trx['status_bayar'].upper())
+    y -= 10*mm
+    
+    c.setDash(2, 2)
+    c.line(x_left, y, x_right, y)
+    c.setDash()
+    y -= 8*mm
+    
+    c.setFont("Helvetica", 8)
+    c.drawCentredString(x_center, y, "Terima Kasih")
+    y -= 4*mm
+    c.drawCentredString(x_center, y, "Cucian bersih, wangi, dan rapi!")
+    
+    c.save()
+    buffer.seek(0)
+    
+    response = make_response(buffer.getvalue())
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = f'inline; filename=struk_{trx["kode_transaksi"]}.pdf'
+    return response

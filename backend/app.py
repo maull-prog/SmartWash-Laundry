@@ -4,12 +4,10 @@ pymysql.install_as_MySQLdb()
 
 from flask import Flask, redirect, url_for, session, render_template, flash
 from flask_mysqldb import MySQL
-from flask_mail import Mail
 from functools import wraps
 from config import Config
 
 mysql = MySQL()
-mail  = Mail()
 
 # Absolute path ke root proyek (satu level di atas folder backend/)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -50,7 +48,6 @@ def create_app():
 
     # Init ekstensi
     mysql.init_app(app)
-    mail.init_app(app)
 
     # Register blueprints
     from routes.auth import auth_bp
@@ -89,7 +86,7 @@ def create_app():
         # Endpoint ini akan di-hit otomatis oleh Vercel sesuai jadwal di vercel.json
         # Atau bisa dikunjungi manual untuk testing
         from services.scheduler import kirim_laporan_harian
-        kirim_laporan_harian(app, mail)
+        kirim_laporan_harian(app)
         return {"status": "success", "message": "Laporan harian berhasil dikirim."}, 200
 
     return app

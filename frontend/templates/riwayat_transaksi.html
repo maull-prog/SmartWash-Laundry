@@ -48,7 +48,7 @@
                             <td>
                                 <button class="btn-action btn-action-view btn-detail-view"
                                         data-id="{{ t.id_transaksi }}" title="Detail" id="btnDetail{{ t.id_transaksi }}">👁</button>
-                                <a href="{{ url_for('laporan.cetak_nota', kode_transaksi=t.kode_transaksi) }}"
+                                <a href="{{ url_for('transaksi.cetak_struk', id=t.id_transaksi) }}"
                                    class="btn-action btn-action-print" target="_blank" title="Cetak Nota">🖨</a>
                             </td>
                         </tr>

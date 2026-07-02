@@ -6,7 +6,7 @@ import pymysql
 import pymysql.cursors
 from datetime import date, datetime
 from flask import render_template
-from flask_mail import Message
+import resend
 from config import Config
 
 
@@ -94,32 +94,36 @@ def ambil_data_laporan(app):
             return None
 
 
-def kirim_laporan_harian(app, mail):
-    """Fungsi utama: render template email dan kirim ke MAIL_RECEIVER."""
+def kirim_laporan_harian(app):
+    """Fungsi utama: render template email dan kirim ke MAIL_RECEIVER menggunakan Resend."""
     with app.app_context():
         receiver = getattr(Config, 'MAIL_RECEIVER', '').strip()
-        username  = getattr(Config, 'MAIL_USERNAME', '').strip()
+        resend_key = getattr(Config, 'RESEND_API_KEY', '').strip()
+        sender = getattr(Config, 'MAIL_DEFAULT_SENDER', ('Smart Wash', 'onboarding@resend.dev'))
 
-        if not receiver or not username:
-            print("[SCHEDULER] Email belum dikonfigurasi (MAIL_USERNAME / MAIL_RECEIVER kosong). Laporan tidak dikirim.")
+        if not receiver or not resend_key:
+            print("[SCHEDULER] Resend API Key / Email Penerima belum dikonfigurasi. Laporan tidak dikirim.")
             return
 
+        resend.api_key = resend_key
         print(f"[SCHEDULER] Menyiapkan laporan harian untuk {receiver}...")
+        
         data = ambil_data_laporan(app)
-
         if data is None:
             print("[SCHEDULER] Data laporan gagal diambil. Email tidak dikirim.")
             return
 
         try:
             html_body = render_template('email_laporan.html', **data)
-
-            msg = Message(
-                subject=f"[Smart Wash] Laporan Harian - {data['tanggal']}",
-                recipients=[receiver],
-                html=html_body
-            )
-            mail.send(msg)
-            print(f"[SCHEDULER] Laporan harian berhasil dikirim ke {receiver} pada {datetime.now().strftime('%H:%M:%S')}")
+            
+            params = {
+                "from": f"{sender[0]} <{sender[1]}>",
+                "to": [receiver],
+                "subject": f"[Smart Wash] Laporan Harian - {data['tanggal']}",
+                "html": html_body,
+            }
+            
+            email_response = resend.Emails.send(params)
+            print(f"[SCHEDULER] Laporan harian berhasil dikirim ke {receiver} (Resend ID: {email_response.get('id', 'unknown')})")
         except Exception as e:
-            print(f"[SCHEDULER] Gagal mengirim email laporan: {e}")
+            print(f"[SCHEDULER] Gagal mengirim email via Resend: {e}")

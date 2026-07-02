@@ -61,7 +61,7 @@
                         <th>Pelanggan</th>
                         <th>Layanan</th>
                         <th>Status Cucian</th>
-                        <th>Perbarui Status</th>
+                        <th style="min-width: 180px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -80,7 +80,7 @@
                                     <span class="badge badge-siap_diambil">Siap Diambil</span>
                                 {% endif %}
                             </td>
-                            <td>
+                            <td style="display: flex; gap: 8px;">
                                 {% if item.status_cucian == 'antrian' %}
                                     <button class="btn-status btn-status-cuci btn-update-status"
                                             data-id="{{ item.id_transaksi }}" id="btnStatus{{ item.id_transaksi }}">
@@ -92,6 +92,9 @@
                                         Tandai Selesai ✓
                                     </button>
                                 {% endif %}
+                                <a href="{{ url_for('transaksi.cetak_struk', id=item.id_transaksi) }}" target="_blank" class="btn-status" style="background: #e2e8f0; color: #475569; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; padding: 0;" title="Cetak Struk">
+                                    <i class="bi bi-printer"></i>
+                                </a>
                             </td>
                         </tr>
                         {% endfor %}
