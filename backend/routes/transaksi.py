@@ -95,17 +95,24 @@ def cek_pelanggan():
 def cari_pelanggan():
     """AJAX autocomplete: cari pelanggan berdasarkan awalan nama."""
     q = request.args.get('q', '').strip()
-    if len(q) < 1:
-        return jsonify([])
 
     cur = mysql.connection.cursor()
-    cur.execute("""
-        SELECT id_pelanggan, nama, no_hp, alamat, poin_loyalitas, level_member, total_transaksi
-        FROM pelanggan
-        WHERE nama LIKE %s
-        ORDER BY total_transaksi DESC, nama ASC
-        LIMIT 8
-    """, (f'{q}%',))
+    if len(q) < 1:
+        # Jika kosong, tampilkan 8 pelanggan terbanyak transaksinya (sering laundry)
+        cur.execute("""
+            SELECT id_pelanggan, nama, no_hp, alamat, poin_loyalitas, level_member, total_transaksi
+            FROM pelanggan
+            ORDER BY total_transaksi DESC, nama ASC
+            LIMIT 8
+        """)
+    else:
+        cur.execute("""
+            SELECT id_pelanggan, nama, no_hp, alamat, poin_loyalitas, level_member, total_transaksi
+            FROM pelanggan
+            WHERE nama LIKE %s
+            ORDER BY total_transaksi DESC, nama ASC
+            LIMIT 8
+        """, (f'{q}%',))
     results = cur.fetchall()
     cur.close()
 
@@ -115,7 +122,7 @@ def cari_pelanggan():
         'no_hp': r['no_hp'] or '',
         'alamat': r['alamat'] or '',
         'poin_loyalitas': int(r['poin_loyalitas'] or 0),
-        'level_member': r['level_member'],
+        'level_member': (r['level_member'] or 'reguler').lower(),
         'total_transaksi': int(r['total_transaksi'] or 0),
     } for r in results])
 

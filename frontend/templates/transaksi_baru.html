@@ -210,6 +210,18 @@
     let debounceTimer;
     let isVip = false; // Simpan status VIP pelanggan yang dipilih
 
+    function doSearch(q) {
+        fetch(`/transaksi/cari_pelanggan?q=${encodeURIComponent(q)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.length === 0) {
+                    dropdown.style.display = 'none';
+                    return;
+                }
+                renderDropdown(data);
+            });
+    }
+
     namaInput.addEventListener('input', function() {
         clearTimeout(debounceTimer);
         const q = this.value.trim();
@@ -219,25 +231,20 @@
         banner.style.display = 'none';
         vipBadge.style.display = 'none';
         poinBadge.style.display = 'none';
-        document.getElementById('rowDiskonVip').style.display = 'none';
+        const vipRow = document.getElementById('rowDiskonVip');
+        if(vipRow) vipRow.style.display = 'none';
         recalcTotal();
 
-        if (q.length < 1) {
-            dropdown.style.display = 'none';
-            return;
-        }
-
         debounceTimer = setTimeout(() => {
-            fetch(`/transaksi/cari_pelanggan?q=${encodeURIComponent(q)}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.length === 0) {
-                        dropdown.style.display = 'none';
-                        return;
-                    }
-                    renderDropdown(data);
-                });
+            doSearch(q);
         }, 200);
+    });
+
+    namaInput.addEventListener('focus', function() {
+        const q = this.value.trim();
+        if (q.length < 1) {
+            doSearch('');
+        }
     });
 
     function renderDropdown(items) {
