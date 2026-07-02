@@ -15,9 +15,13 @@
                 </div>
                 <div class="card-body">
                     <div class="form-row">
-                        <div class="form-group">
+                        <div class="form-group" style="position: relative;">
                             <label for="namaPelanggan">Nama Pelanggan *</label>
-                            <input type="text" class="form-control" id="namaPelanggan" name="nama_pelanggan" required placeholder="Nama pelanggan">
+                            <input type="text" class="form-control" id="namaPelanggan" name="nama_pelanggan"
+                                   required placeholder="Ketik nama pelanggan..."
+                                   autocomplete="off">
+                            <!-- Autocomplete dropdown -->
+                            <div id="autocompleteDropdown" style="display:none; position:absolute; top:100%; left:0; right:0; z-index:999; background:#fff; border:1px solid #e2e8f0; border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,.12); max-height:280px; overflow-y:auto;"></div>
                         </div>
                         <div class="form-group">
                             <label for="noHpPelanggan">No WhatsApp</label>
@@ -27,6 +31,11 @@
                     <div class="form-group">
                         <label for="alamatPelanggan">Alamat</label>
                         <input type="text" class="form-control" id="alamatPelanggan" name="alamat" placeholder="Alamat pelanggan">
+                    </div>
+                    <!-- Banner pelanggan lama -->
+                    <div id="bannerPelangganLama" style="display:none; margin-top:10px; padding:10px 14px; background:#f0fdf4; border:1px solid #86efac; border-radius:10px; font-size:.9rem; color:#166534;">
+                        <i class="bi bi-person-check-fill"></i>
+                        <strong id="bannerNamaPelanggan"></strong> — <span id="bannerInfoPelanggan"></span>
                     </div>
                 </div>
             </div>
@@ -179,5 +188,107 @@
         }{% if not loop.last %},{% endif %}
         {% endfor %}
     ];
+</script>
+
+<script>
+    // ─── Autocomplete Pelanggan ───
+    const namaInput      = document.getElementById('namaPelanggan');
+    const dropdown       = document.getElementById('autocompleteDropdown');
+    const noHpInput      = document.getElementById('noHpPelanggan');
+    const alamatInput    = document.getElementById('alamatPelanggan');
+    const vipBadge       = document.getElementById('vipBadge');
+    const poinBadge      = document.getElementById('poinBadge');
+    const poinValue      = document.getElementById('poinValue');
+    const banner         = document.getElementById('bannerPelangganLama');
+    const bannerNama     = document.getElementById('bannerNamaPelanggan');
+    const bannerInfo     = document.getElementById('bannerInfoPelanggan');
+
+    let debounceTimer;
+
+    namaInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        const q = this.value.trim();
+
+        // Reset banner & badge jika user mengetik ulang
+        banner.style.display = 'none';
+        vipBadge.style.display = 'none';
+        poinBadge.style.display = 'none';
+
+        if (q.length < 1) {
+            dropdown.style.display = 'none';
+            return;
+        }
+
+        debounceTimer = setTimeout(() => {
+            fetch(`/transaksi/cari_pelanggan?q=${encodeURIComponent(q)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        dropdown.style.display = 'none';
+                        return;
+                    }
+                    renderDropdown(data);
+                });
+        }, 200);
+    });
+
+    function renderDropdown(items) {
+        dropdown.innerHTML = '';
+        items.forEach(p => {
+            const item = document.createElement('div');
+            item.style.cssText = 'padding:10px 14px; cursor:pointer; border-bottom:1px solid #f1f5f9; transition:background .15s;';
+            item.innerHTML = `
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                    <div>
+                        <strong style="font-size:.95rem;">${p.nama}</strong>
+                        ${p.level_member === 'vip' ? '<span style="margin-left:6px; font-size:.75rem; background:#fef3c7; color:#92400e; padding:1px 7px; border-radius:999px;">⭐ VIP</span>' : ''}
+                        <div style="font-size:.8rem; color:#64748b; margin-top:2px;">${p.no_hp || 'No. HP belum tersimpan'}</div>
+                    </div>
+                    <div style="text-align:right; font-size:.8rem; color:#64748b;">
+                        <div>${p.poin_loyalitas} poin</div>
+                        <div>${p.total_transaksi}x laundry</div>
+                    </div>
+                </div>
+            `;
+            item.addEventListener('mouseenter', () => item.style.background = '#f8fafc');
+            item.addEventListener('mouseleave', () => item.style.background = '');
+            item.addEventListener('mousedown', (e) => {
+                e.preventDefault(); // Cegah blur sebelum click terproses
+                pilihPelanggan(p);
+            });
+            dropdown.appendChild(item);
+        });
+        dropdown.style.display = 'block';
+    }
+
+    function pilihPelanggan(p) {
+        namaInput.value  = p.nama;
+        noHpInput.value  = p.no_hp;
+        alamatInput.value = p.alamat;
+        dropdown.style.display = 'none';
+
+        // Tampilkan badge VIP
+        if (p.level_member === 'vip') {
+            vipBadge.style.display = 'inline-flex';
+        }
+
+        // Tampilkan poin
+        if (p.poin_loyalitas > 0) {
+            poinBadge.style.display = 'inline-flex';
+            poinValue.textContent = p.poin_loyalitas;
+        }
+
+        // Tampilkan banner hijau
+        bannerNama.textContent = p.nama;
+        bannerInfo.textContent = `Pelanggan lama · ${p.total_transaksi}× laundry · ${p.poin_loyalitas} poin loyalitas`;
+        banner.style.display = 'block';
+    }
+
+    // Tutup dropdown saat klik di luar
+    document.addEventListener('click', function(e) {
+        if (!namaInput.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
 </script>
 {% endblock %}

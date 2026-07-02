@@ -90,6 +90,36 @@ def cek_pelanggan():
     return jsonify({'found': False})
 
 
+@transaksi_bp.route('/transaksi/cari_pelanggan')
+@login_required
+def cari_pelanggan():
+    """AJAX autocomplete: cari pelanggan berdasarkan awalan nama."""
+    q = request.args.get('q', '').strip()
+    if len(q) < 1:
+        return jsonify([])
+
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT id_pelanggan, nama, no_hp, alamat, poin_loyalitas, level_member, total_transaksi
+        FROM pelanggan
+        WHERE nama LIKE %s
+        ORDER BY total_transaksi DESC, nama ASC
+        LIMIT 8
+    """, (f'{q}%',))
+    results = cur.fetchall()
+    cur.close()
+
+    return jsonify([{
+        'id_pelanggan': r['id_pelanggan'],
+        'nama': r['nama'],
+        'no_hp': r['no_hp'] or '',
+        'alamat': r['alamat'] or '',
+        'poin_loyalitas': int(r['poin_loyalitas'] or 0),
+        'level_member': r['level_member'],
+        'total_transaksi': int(r['total_transaksi'] or 0),
+    } for r in results])
+
+
 @transaksi_bp.route('/transaksi/simpan', methods=['POST'])
 @login_required
 def simpan_transaksi():
