@@ -2,46 +2,119 @@
 {% set active_menu = 'pelanggan' %}
 
 {% block content %}
-<div class="card">
-    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-        <h3>👥 Data Pelanggan & Membership</h3>
+
+<!-- Header Stats -->
+<div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #3B82F6, #1D4ED8);">
+            <i class="bi bi-people-fill"></i>
+        </div>
+        <div class="stat-info">
+            <p class="stat-label">Total Pelanggan</p>
+            <p class="stat-value">{{ pelanggan_list | length }}</p>
+        </div>
     </div>
-    <div class="card-body">
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #F59E0B, #B45309);">
+            <i class="bi bi-star-fill"></i>
+        </div>
+        <div class="stat-info">
+            <p class="stat-label">Member VIP</p>
+            <p class="stat-value">{{ pelanggan_list | selectattr('level_member', 'equalto', 'VIP') | list | length }}</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #10B981, #065F46);">
+            <i class="bi bi-award-fill"></i>
+        </div>
+        <div class="stat-info">
+            <p class="stat-label">Total Poin Beredar</p>
+            <p class="stat-value">{{ pelanggan_list | sum(attribute='poin_loyalitas') }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Tabel Pelanggan -->
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 24px;">
+        <div>
+            <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-dark); margin: 0;">
+                <i class="bi bi-people-fill" style="color: var(--primary-dark); margin-right: 8px;"></i>
+                Data Pelanggan & Membership
+            </h3>
+            <p style="font-size: 0.78rem; color: var(--text-gray); margin: 2px 0 0 0;">Kelola level member dan lihat saldo poin pelanggan</p>
+        </div>
+    </div>
+    <div class="card-body" style="padding: 0;">
         <div class="table-responsive">
-            <table class="table">
+            <table class="table" style="margin: 0;">
                 <thead>
                     <tr>
-                        <th>Nama Pelanggan</th>
+                        <th style="padding-left: 24px;">Pelanggan</th>
                         <th>No WhatsApp</th>
                         <th>Total Transaksi</th>
                         <th>Poin Loyalitas</th>
                         <th>Level Member</th>
-                        <th width="150px">Aksi</th>
+                        <th style="text-align: center; padding-right: 24px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for pel in pelanggan_list %}
                     <tr>
-                        <td style="font-weight: 600;">{{ pel.nama }}</td>
-                        <td>{{ pel.no_hp if pel.no_hp else '-' }}</td>
-                        <td>{{ pel.total_transaksi }}x</td>
-                        <td>
-                            <span class="badge badge-sedang_dicuci">🪙 {{ pel.poin_loyalitas }} Poin</span>
+                        <td style="padding-left: 24px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-dark), var(--primary-light)); display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; font-size: 0.85rem; flex-shrink: 0;">
+                                    {{ pel.nama[0].upper() }}
+                                </div>
+                                <div>
+                                    <p style="font-weight: 600; color: var(--text-dark); margin: 0; font-size: 0.875rem;">{{ pel.nama }}</p>
+                                    <p style="font-size: 0.73rem; color: var(--text-light); margin: 0;">Terdaftar sejak {{ pel.tgl_daftar.strftime('%d %b %Y') if pel.tgl_daftar else '-' }}</p>
+                                </div>
+                            </div>
                         </td>
-                        <td>
-                            {% if pel.level_member == 'VIP' %}
-                                <span class="badge badge-aktif">⭐ VIP</span>
+                        <td style="font-size: 0.875rem; color: var(--text-gray);">
+                            {% if pel.no_hp %}
+                                <i class="bi bi-whatsapp" style="color: #25D366; margin-right: 4px;"></i>{{ pel.no_hp }}
                             {% else %}
-                                <span class="badge badge-antrian">Reguler</span>
+                                <span style="color: var(--text-light);">-</span>
                             {% endif %}
                         </td>
                         <td>
+                            <span style="font-size: 0.875rem; font-weight: 600; color: var(--primary-dark);">
+                                {{ pel.total_transaksi }}
+                            </span>
+                            <span style="font-size: 0.75rem; color: var(--text-gray);"> transaksi</span>
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span style="background: #FEF3C7; color: #92400E; padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 600;">
+                                    {{ pel.poin_loyalitas }} Poin
+                                </span>
+                                <span style="font-size: 0.7rem; color: var(--text-light);">= Rp {{ "{:,.0f}".format(pel.poin_loyalitas * 1000) }}</span>
+                            </div>
+                        </td>
+                        <td>
                             {% if pel.level_member == 'VIP' %}
-                            <button type="button" class="btn btn-sm btn-outline-danger btn-toggle-vip" data-id="{{ pel.id_pelanggan }}" data-action="reguler">
+                                <span style="background: linear-gradient(135deg, #FEF3C7, #FDE68A); color: #92400E; padding: 4px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; border: 1px solid #F59E0B; display: inline-flex; align-items: center; gap: 4px;">
+                                    &#11088; VIP Member
+                                </span>
+                            {% else %}
+                                <span style="background: #F3F4F6; color: #6B7280; padding: 4px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 600;">
+                                    Reguler
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td style="text-align: center; padding-right: 24px;">
+                            {% if pel.level_member == 'VIP' %}
+                            <button type="button" class="btn-toggle-vip"
+                                data-id="{{ pel.id_pelanggan }}" data-action="reguler"
+                                style="background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; padding: 5px 14px; border-radius: 6px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
                                 Cabut VIP
                             </button>
                             {% else %}
-                            <button type="button" class="btn btn-sm btn-outline-success btn-toggle-vip" data-id="{{ pel.id_pelanggan }}" data-action="VIP">
+                            <button type="button" class="btn-toggle-vip"
+                                data-id="{{ pel.id_pelanggan }}" data-action="VIP"
+                                style="background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; padding: 5px 14px; border-radius: 6px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
                                 Jadikan VIP
                             </button>
                             {% endif %}
@@ -49,7 +122,10 @@
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="6" class="text-center" style="padding: 30px; color: #9CA3AF;">Belum ada data pelanggan.</td>
+                        <td colspan="6" style="text-align: center; padding: 60px 20px; color: var(--text-light);">
+                            <i class="bi bi-people" style="font-size: 2.5rem; display: block; margin-bottom: 12px; opacity: 0.3;"></i>
+                            Belum ada data pelanggan.
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -57,44 +133,55 @@
         </div>
     </div>
 </div>
+
+<!-- Toast Notification -->
+<div id="toast-notif" style="display:none; position: fixed; bottom: 24px; right: 24px; background: #1F2937; color: white; padding: 12px 20px; border-radius: 10px; font-size: 0.875rem; font-weight: 500; z-index: 9999; box-shadow: 0 4px 20px rgba(0,0,0,0.3); min-width: 240px;"></div>
+
 {% endblock %}
 
 {% block scripts %}
 <script>
+    function showToast(msg, isSuccess) {
+        var toast = document.getElementById('toast-notif');
+        toast.innerHTML = (isSuccess ? '&#10003; ' : '&#10007; ') + msg;
+        toast.style.background = isSuccess ? '#065F46' : '#991B1B';
+        toast.style.display = 'block';
+        setTimeout(function() { toast.style.display = 'none'; }, 3000);
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.btn-toggle-vip').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 var id = this.getAttribute('data-id');
                 var action = this.getAttribute('data-action');
-                var confirmMsg = action === 'VIP' ? 'Jadikan pelanggan ini VIP?' : 'Cabut status VIP pelanggan ini?';
+                var confirmMsg = action === 'VIP' ? 'Jadikan pelanggan ini VIP Member?' : 'Cabut status VIP pelanggan ini?';
                 
                 if (confirm(confirmMsg)) {
+                    var self = this;
                     var originalText = this.innerHTML;
                     this.innerHTML = 'Memproses...';
                     this.disabled = true;
                     
                     fetch('/pelanggan/set_vip/' + id, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ action: action })
                     })
-                    .then(response => response.json())
+                    .then(r => r.json())
                     .then(data => {
                         if (data.success) {
-                            window.location.reload();
+                            showToast(data.message, true);
+                            setTimeout(() => window.location.reload(), 1200);
                         } else {
-                            alert('Gagal: ' + data.message);
-                            this.innerHTML = originalText;
-                            this.disabled = false;
+                            showToast('Gagal: ' + data.message, false);
+                            self.innerHTML = originalText;
+                            self.disabled = false;
                         }
                     })
-                    .catch(err => {
-                        alert('Terjadi kesalahan sistem.');
-                        this.innerHTML = originalText;
-                        this.disabled = false;
+                    .catch(() => {
+                        showToast('Terjadi kesalahan sistem.', false);
+                        self.innerHTML = originalText;
+                        self.disabled = false;
                     });
                 }
             });

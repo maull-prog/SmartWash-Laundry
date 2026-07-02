@@ -1,10 +1,15 @@
 import os
+import pymysql
+pymysql.install_as_MySQLdb()
+
 from flask import Flask, redirect, url_for, session, render_template, flash
 from flask_mysqldb import MySQL
+from flask_mail import Mail
 from functools import wraps
 from config import Config
 
 mysql = MySQL()
+mail  = Mail()
 
 # Absolute path ke root proyek (satu level di atas folder backend/)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -43,8 +48,9 @@ def create_app():
     )
     app.config.from_object(Config)
 
-    # Init MySQL
+    # Init ekstensi
     mysql.init_app(app)
+    mail.init_app(app)
 
     # Register blueprints
     from routes.auth import auth_bp
@@ -77,8 +83,16 @@ def create_app():
     def server_error(e):
         return render_template('base.html', page_title='500 - Kesalahan Server'), 500
 
-    return app
+    # Endpoint untuk Vercel Cron Jobs
+    @app.route('/api/cron_laporan', methods=['GET', 'POST'])
+    def vercel_cron_laporan():
+        # Endpoint ini akan di-hit otomatis oleh Vercel sesuai jadwal di vercel.json
+        # Atau bisa dikunjungi manual untuk testing
+        from services.scheduler import kirim_laporan_harian
+        kirim_laporan_harian(app, mail)
+        return {"status": "success", "message": "Laporan harian berhasil dikirim."}, 200
 
+    return app
 
 if __name__ == '__main__':
     app = create_app()

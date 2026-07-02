@@ -33,7 +33,7 @@ def dashboard():
         LEFT JOIN detail_transaksi dt ON t.id_transaksi = dt.id_transaksi
         LEFT JOIN layanan l ON dt.id_layanan = l.id_layanan
         WHERE t.status_cucian != 'selesai'
-        GROUP BY t.id_transaksi
+        GROUP BY t.id_transaksi, t.kode_transaksi, t.status_cucian, t.berat_kg, p.nama, t.tgl_masuk
         ORDER BY t.tgl_masuk DESC
     """)
     cucian_aktif = cur.fetchall()

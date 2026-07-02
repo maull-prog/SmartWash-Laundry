@@ -1,7 +1,7 @@
 Flask==2.3.3
-flask-mysqldb==1.0.1
-Flask-Login==0.6.3
+Flask-Mail==0.10.0
+PyMySQL==1.1.0
 bcrypt==4.1.2
-reportlab==4.1.0
-python-dotenv==1.0.0
+cryptography==42.0.5
 Werkzeug==2.3.7
+Jinja2==3.1.3

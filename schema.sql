@@ -1,9 +1,16 @@
 -- ============================================
 -- Smart Wash Laundry — Database Schema
+-- (Versi TiDB Cloud Aman & Bersih)
 -- ============================================
 
-CREATE DATABASE IF NOT EXISTS smartwash_db;
-USE smartwash_db;
+USE test;
+
+DROP TABLE IF EXISTS detail_transaksi;
+DROP TABLE IF EXISTS transaksi;
+DROP TABLE IF EXISTS promo;
+DROP TABLE IF EXISTS layanan;
+DROP TABLE IF EXISTS pelanggan;
+DROP TABLE IF EXISTS pengguna;
 
 -- ------------------------------------------
 -- Tabel pengguna (Owner & Kasir)
@@ -100,10 +107,7 @@ CREATE TABLE IF NOT EXISTS transaksi (
   status_bayar ENUM('belum', 'lunas') DEFAULT 'belum',
   status_cucian ENUM('antrian', 'sedang_dicuci', 'siap_diambil', 'selesai') DEFAULT 'antrian',
   keterangan TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (id_pelanggan) REFERENCES pelanggan(id_pelanggan),
-  FOREIGN KEY (id_kasir) REFERENCES pengguna(id_pengguna),
-  FOREIGN KEY (id_promo) REFERENCES promo(id_promo)
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ------------------------------------------
@@ -117,7 +121,5 @@ CREATE TABLE IF NOT EXISTS detail_transaksi (
   qty INT DEFAULT 1,
   harga_saat_transaksi DECIMAL(10,2) NOT NULL,
   subtotal DECIMAL(10,2) NOT NULL,
-  catatan TEXT,
-  FOREIGN KEY (id_transaksi) REFERENCES transaksi(id_transaksi) ON DELETE CASCADE,
-  FOREIGN KEY (id_layanan) REFERENCES layanan(id_layanan)
+  catatan TEXT
 );

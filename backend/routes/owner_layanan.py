@@ -64,7 +64,7 @@ def dashboard_owner():
         LEFT JOIN pelanggan p ON t.id_pelanggan = p.id_pelanggan
         LEFT JOIN detail_transaksi dt ON t.id_transaksi = dt.id_transaksi
         LEFT JOIN layanan l ON dt.id_layanan = l.id_layanan
-        GROUP BY t.id_transaksi
+        GROUP BY t.id_transaksi, t.kode_transaksi, t.status_cucian, t.total_harga, p.nama, t.tgl_masuk
         ORDER BY t.tgl_masuk DESC
         LIMIT 5
     """)
