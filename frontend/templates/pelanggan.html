@@ -10,6 +10,16 @@
 .stat-info { display: flex; flex-direction: column; }
 .stat-label { font-size: 0.875rem; color: #64748b; margin: 0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 .stat-value { font-size: 1.75rem; color: #0f172a; margin: 4px 0 0 0; font-weight: 800; line-height: 1.2; }
+
+/* Table Styling */
+.table { width: 100%; border-collapse: separate; border-spacing: 0 12px; margin-top: 10px; }
+.table th { padding: 12px 24px; color: #64748b; font-weight: 600; font-size: 0.85rem; text-align: left; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f1f5f9; white-space: nowrap; }
+.table td { padding: 16px 24px; vertical-align: middle; background: #fff; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; }
+.table td:first-child { border-left: 1px solid #f1f5f9; border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+.table td:last-child { border-right: 1px solid #f1f5f9; border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+.table tbody tr { transition: transform 0.2s, box-shadow 0.2s; }
+.table tbody tr:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+.table tbody tr:hover td { background: #f8fafc; }
 </style>
 
 <!-- Header Stats -->
