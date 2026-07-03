@@ -1,3 +1,5 @@
+import os
+
 class Config:
     SECRET_KEY = 'smartwash_secret_key_2026'
     MYSQL_HOST = 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com'
@@ -15,7 +17,7 @@ class Config:
 
     # ── Konfigurasi Email (Laporan Harian Otomatis Menggunakan Resend) ──
     # Isi dengan API Key dari akun Resend Anda
-    RESEND_API_KEY = '' # ← MASUKKAN API KEY RESEND DI SINI
+    RESEND_API_KEY = os.getenv('RESEND_API_KEY', '') # ← MASUKKAN API KEY RESEND DI SINI atau via Vercel Env
     MAIL_DEFAULT_SENDER = ('Smart Wash Laundry', 'onboarding@resend.dev')
 
     # Penerima laporan harian
