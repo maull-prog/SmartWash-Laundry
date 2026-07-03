@@ -596,7 +596,7 @@ def cetak_struk(id):
     c.drawCentredString(x_center, y, "SMART WASH LAUNDRY")
     y -= 6*mm
     c.setFont("Helvetica", 9)
-    c.drawCentredString(x_center, y, "Jl. Bersih No. 1, Jakarta")
+    c.drawCentredString(x_center, y, "Jalan, Blotongan No.3, Salatiga")
     y -= 10*mm
     
     c.setDash(2, 2)
@@ -648,7 +648,7 @@ def cetak_struk(id):
     
     c.setFont("Helvetica", 9)
     c.drawString(x_left, y, "Status:")
-    c.drawRightString(x_right, y, trx['status_bayar'].upper())
+    c.drawRightString(x_right, y, "Lunas" if trx['status_bayar'] == 'lunas' else "Belum Lunas")
     y -= 10*mm
     
     c.setDash(2, 2)
