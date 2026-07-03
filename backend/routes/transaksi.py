@@ -261,7 +261,9 @@ def simpan_transaksi():
         total_bayar = max(total_harga - diskon, 0)
         
         # 6b. Poin didapat (1 Poin per Rp 10.000)
-        poin_didapat = int(total_bayar // 10000)
+        poin_didapat = 0
+        if level_member and level_member.lower() == 'vip':
+            poin_didapat = int(total_bayar // 10000)
 
         tgl_estimasi = (now + timedelta(days=estimasi_max)).date() if estimasi_max > 0 else (now + timedelta(days=2)).date()
 

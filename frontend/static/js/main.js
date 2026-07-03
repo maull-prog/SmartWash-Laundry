@@ -606,7 +606,8 @@ function renderInvoice(data) {
     document.getElementById('invoicePrintArea').innerHTML = `
         <div class="invoice-header">
             <h2>Invoice</h2>
-            <p>Smartwash Laundry</p>
+            <p style="font-weight: bold; margin-bottom: 2px;">Smartwash Laundry</p>
+            <p style="font-size: 0.8rem; color: #475569;">Jalan, Blotongan No.3, Salatiga</p>
         </div>
         <div class="invoice-meta">
             <div>
@@ -644,7 +645,7 @@ function renderInvoice(data) {
             </div>
         </div>
         
-        <div class="invoice-status ${data.status_bayar === 'lunas' ? 'status-lunas' : 'status-belum'}">
+        <div class="invoice-status ${data.status_bayar === 'lunas' ? 'status-lunas' : 'status-belum'}" style="margin-top: 20px; font-weight: bold; border-radius: 8px; border-width: 2px;">
             ${statusLabel}
         </div>
     `;

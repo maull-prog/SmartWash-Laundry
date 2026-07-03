@@ -251,6 +251,14 @@
         poinBadge.style.display = 'none';
         const vipRow = document.getElementById('rowDiskonVip');
         if(vipRow) vipRow.style.display = 'none';
+        
+        const tukarPoinInput = document.getElementById('tukarPoin');
+        if(tukarPoinInput) {
+            tukarPoinInput.value = '0';
+            tukarPoinInput.disabled = true;
+            tukarPoinInput.title = 'Hanya member VIP yang dapat menukar poin';
+        }
+        
         if(typeof updateOrderSummary === 'function') updateOrderSummary();
 
         debounceTimer = setTimeout(() => {
@@ -301,6 +309,19 @@
 
         // Set status VIP & hitung ulang total
         isVip = (p.level_member === 'vip');
+        
+        const tukarPoinInput = document.getElementById('tukarPoin');
+        if(tukarPoinInput) {
+            if (isVip) {
+                tukarPoinInput.disabled = false;
+                tukarPoinInput.title = '';
+            } else {
+                tukarPoinInput.value = '0';
+                tukarPoinInput.disabled = true;
+                tukarPoinInput.title = 'Hanya member VIP yang dapat menukar poin';
+            }
+        }
+        
         if(typeof updateOrderSummary === 'function') updateOrderSummary();
 
         // Tampilkan badge VIP

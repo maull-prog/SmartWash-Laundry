@@ -1988,3 +1988,7 @@ textarea.form-control {
         display: none !important;
     }
 }
+
+
+.status-lunas { color: #166534; background: #dcfce7; border-color: #22c55e; }
+.status-belum { color: #991b1b; background: #fee2e2; border-color: #ef4444; }
