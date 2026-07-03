@@ -345,14 +345,14 @@ def update_status(id):
     # Jika status menjadi siap_diambil, kirim notifikasi WA
     if new_status == 'siap_diambil':
         cur.execute("""
-            SELECT t.kode_transaksi, p.nama, p.no_hp 
+            SELECT t.kode_transaksi, t.total_harga, p.nama, p.no_hp 
             FROM transaksi t
             JOIN pelanggan p ON t.id_pelanggan = p.id_pelanggan
             WHERE t.id_transaksi = %s
         """, (id,))
         trx_info = cur.fetchone()
         if trx_info and trx_info['no_hp']:
-            kirim_notifikasi_siap(trx_info['no_hp'], trx_info['nama'], trx_info['kode_transaksi'])
+            kirim_notifikasi_siap(trx_info['no_hp'], trx_info['nama'], trx_info['kode_transaksi'], trx_info['total_harga'])
 
     mysql.connection.commit()
     cur.close()

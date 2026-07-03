@@ -1,7 +1,7 @@
 import requests
 from config import Config
 
-def kirim_notifikasi_siap(no_hp, nama_pelanggan, kode_transaksi):
+def kirim_notifikasi_siap(no_hp, nama_pelanggan, kode_transaksi, total_harga=0):
     """
     Mengirim notifikasi WhatsApp via Fonnte API bahwa cucian sudah siap diambil.
     Jika FONNTE_TOKEN tidak diset di config, fungsi ini akan di-skip.
@@ -23,12 +23,18 @@ def kirim_notifikasi_siap(no_hp, nama_pelanggan, kode_transaksi):
     if no_hp.startswith('0'):
         no_hp = '62' + no_hp[1:]
         
+    # Format mata uang dengan pemisah titik
+    formatted_total = f"Rp {int(total_harga):,}".replace(",", ".")
+
     pesan = (
-        f"Halo *{nama_pelanggan}*,\n\n"
-        f"Cucian Anda dengan nomor nota *{kode_transaksi}* sudah selesai dan siap untuk diambil! 🧺✨\n\n"
-        f"Terima kasih telah mempercayakan pakaian Anda kepada *Smart Wash Laundry*.\n\n"
-        f"--- \n"
-        f"Pesan ini dikirim otomatis oleh sistem."
+        f"Halo {nama_pelanggan}\n\n"
+        f"Laundry Anda telah selesai diproses dan sudah siap diambil.\n\n"
+        f"Kode Transaksi:\n"
+        f"*{kode_transaksi}*\n\n"
+        f"Total Pembayaran:\n"
+        f"*{formatted_total}*\n\n"
+        f"Silakan datang ke Smart Wash Laundry.\n\n"
+        f"Terima kasih telah menggunakan Smart Wash Laundry."
     )
     
     url = "https://api.fonnte.com/send"
