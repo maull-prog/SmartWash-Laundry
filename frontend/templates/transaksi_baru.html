@@ -4,6 +4,7 @@
 {% block content %}
 <form id="formTransaksi" method="POST" action="{{ url_for('transaksi.simpan_transaksi') }}">
     <input type="hidden" name="status_bayar" id="statusBayar" value="belum">
+    <input type="hidden" name="id_pelanggan" id="hiddenIdPelanggan" value="">
     <div class="transaksi-layout">
         <!-- ── Kolom Kiri: Form Input ── -->
         <div>
@@ -306,6 +307,10 @@
         noHpInput.value   = p.no_hp;
         alamatInput.value = p.alamat;
         dropdown.style.display = 'none';
+
+        // Set id_pelanggan tersembunyi agar backend bisa identifikasi dengan tepat
+        const hiddenId = document.getElementById('hiddenIdPelanggan');
+        if (hiddenId) hiddenId.value = p.id_pelanggan;
 
         // Set status VIP & hitung ulang total
         isVip = (p.level_member === 'vip');

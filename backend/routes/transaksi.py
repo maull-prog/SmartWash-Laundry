@@ -111,8 +111,8 @@ def cari_pelanggan():
             FROM pelanggan
             WHERE LOWER(nama) LIKE LOWER(%s)
             ORDER BY total_transaksi DESC, nama ASC
-            LIMIT 8
-        """, (f'{q}%',))
+            LIMIT 10
+        """, (f'%{q}%',))
     results = cur.fetchall()
     cur.close()
 
@@ -167,11 +167,17 @@ def simpan_transaksi():
 
     try:
         # 1. Cari atau buat pelanggan
-        if no_hp:
-            cur.execute("SELECT id_pelanggan, level_member, poin_loyalitas FROM pelanggan WHERE nama = %s AND no_hp = %s", (nama_pelanggan, no_hp))
+        id_pelanggan_input = request.form.get('id_pelanggan', '').strip()
+        if id_pelanggan_input and id_pelanggan_input.isdigit():
+            # Pelanggan lama dipilih dari dropdown — cari via ID
+            cur.execute("SELECT id_pelanggan, level_member, poin_loyalitas FROM pelanggan WHERE id_pelanggan = %s", (int(id_pelanggan_input),))
+            pelanggan = cur.fetchone()
+        elif no_hp:
+            cur.execute("SELECT id_pelanggan, level_member, poin_loyalitas FROM pelanggan WHERE LOWER(nama) = LOWER(%s) AND no_hp = %s", (nama_pelanggan, no_hp))
+            pelanggan = cur.fetchone()
         else:
-            cur.execute("SELECT id_pelanggan, level_member, poin_loyalitas FROM pelanggan WHERE nama = %s", (nama_pelanggan,))
-        pelanggan = cur.fetchone()
+            cur.execute("SELECT id_pelanggan, level_member, poin_loyalitas FROM pelanggan WHERE LOWER(nama) = LOWER(%s)", (nama_pelanggan,))
+            pelanggan = cur.fetchone()
 
         if pelanggan:
             id_pelanggan = pelanggan['id_pelanggan']
