@@ -101,8 +101,8 @@ document.addEventListener('DOMContentLoaded', function () {
                                     '<td>' + t.no_hp_pelanggan + '</td>' +
                                     '<td><span class="badge ' + statusClass + '">' + statusLabel + '</span></td>' +
                                     '<td>' +
-                                    '<button class="btn-action btn-action-view btn-detail-view" data-id="' + t.id_transaksi + '" title="Detail"></button> ' +
-                                    '<a href="/transaksi/cetak/' + t.kode_transaksi + '" class="btn-action btn-action-print" target="_blank" title="Cetak"></a>' +
+                                    '<button class="btn-action btn-action-view btn-detail-view" data-id="' + t.id_transaksi + '" title="Detail"><i class="bi bi-eye"></i></button> ' +
+                                    '<a href="/transaksi/cetak/' + t.kode_transaksi + '" class="btn-action btn-action-print" target="_blank" title="Cetak"><i class="bi bi-printer"></i></a>' +
                                     '</td>' +
                                     '</tr>';
                                 tableBody.innerHTML += row;
